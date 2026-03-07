@@ -383,7 +383,7 @@ function AboutSection() {
 
             <Reveal inView={inView} delay={420}>
               <p style={{ color: C.soft, fontSize: 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: 28 }}>
-                Sinh viên IT tại <strong style={{ color: C.white, fontWeight: 700 }}>HUTECH University</strong> (2022 – nay). Đam mê xây dựng giao diện web hiện đại và thân thiện với người dùng — từ wireframe Figma đến code React chạy thật sự.
+                Sinh viên IT tại <strong style={{ color: C.white, fontWeight: 700 }}>HUTECH University</strong> (2022 - nay). Đam mê xây dựng giao diện web hiện đại và thân thiện với người dùng — từ wireframe Figma đến code React chạy thật sự.
               </p>
             </Reveal>
 
@@ -459,7 +459,7 @@ function SkillsSection() {
             </div>
             <Reveal inView={inView} delay={300}>
               <p style={{ color: C.dim, fontSize: 13, maxWidth: 300, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", textAlign: "right" }}>
-                Web & Mobile — từ React.js đến Kotlin Android, luôn học thêm công nghệ mới.
+                Web & Mobile - từ React.js đến Kotlin Android, luôn học thêm công nghệ mới.
               </p>
             </Reveal>
           </div>
