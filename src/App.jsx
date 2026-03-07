@@ -385,7 +385,9 @@ function AboutSection() {
 
             <Reveal inView={inView} delay={420}>
               <p style={{ color: C.soft, fontSize: 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: 28 }}>
-                Sinh viên IT tại <strong style={{ color: C.white, fontWeight: 700 }}>HUTECH University</strong> (2022 - nay). Đam mê xây dựng giao diện web hiện đại và thân thiện với người dùng - từ wireframe Figma đến code chạy thật sự.
+              IT student at <strong style={{ color: C.white, fontWeight: 700 }}>HUTECH University</strong> (2022 – present). 
+Passionate about creating modern and user-friendly web interfaces, transforming Figma wireframes into fully functional applications.
+
               </p>
             </Reveal>
 
