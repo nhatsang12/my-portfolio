@@ -4,10 +4,10 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const NAV_ITEMS = ["HOME", "ABOUT", "SKILLS", "WORK", "CONTACT"];
 
 const skills = [
-  { name: "React.js", years: "1yr" }, { name: "JavaScript", years: "2yr" },
-  { name: "HTML / CSS", years: "2yr" }, { name: "Tailwind CSS", years: "1yr" },
-  { name: "Node.js", years: "1yr" }, { name: "Kotlin", years: "1yr" },
-  { name: "Figma", years: "1yr" }, { name: "Git / GitHub", years: "2yr" },
+  { name: "React.js" }, { name: "JavaScript"},
+  { name: "HTML / CSS" }, { name: "Tailwind CSS" },
+  { name: "Node.js" }, { name: "Kotlin"},
+  { name: "Figma" }, { name: "Git / GitHub" },
 ];
 
 const projects = [
