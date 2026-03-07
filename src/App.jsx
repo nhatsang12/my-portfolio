@@ -15,14 +15,14 @@ const projects = [
     num: "01", name: "Event Ticketing Platform",
     tech: ["React.js", "React Router", "Tailwind CSS", "Lucide React"],
     desc: "Online ticketing system: search, book, pay for tickets - admin dashboard with KPI & revenue chart",
-    year: "2024", status: "BUILT",
+    year: "2026 - now", status: "BUILT",
     github: "https://github.com/nhatsang12/EventTicketMangement",
   },
   {
     num: "02", name: "Social App (Mobile)",
     tech: ["Kotlin", "XML", "Figma", "Android Studio"],
     desc: "Mobile social app with posts, Reels feed, full-screen video playback - UI designed in Figma",
-    year: "2024", status: "BUILT",
+    year: "2025", status: "BUILT",
     github: "https://github.com/VanVinh1604/SocialMedia",
   },
 ];
@@ -525,7 +525,7 @@ function ProjectsSection() {
             <Reveal inView={inView} delay={280}>
               <div style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, textAlign: "right" }}>
                 <div>{projects.length} PROJECTS</div>
-                <div style={{ color: C.sub, marginTop: 4 }}>2024</div>
+                <div style={{ color: C.sub, marginTop: 4 }}>202</div>
               </div>
             </Reveal>
           </div>
