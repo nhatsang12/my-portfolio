@@ -14,14 +14,14 @@ const projects = [
   {
     num: "01", name: "Event Ticketing Platform",
     tech: ["React.js", "React Router", "Tailwind CSS", "Lucide React"],
-    desc: "Online ticketing system: search, book, pay for tickets — admin dashboard with KPI & revenue chart",
+    desc: "Online ticketing system: search, book, pay for tickets - admin dashboard with KPI & revenue chart",
     year: "2024", status: "BUILT",
     github: "https://github.com/nhatsang12/EventTicketMangement",
   },
   {
     num: "02", name: "Social App (Mobile)",
     tech: ["Kotlin", "XML", "Figma", "Android Studio"],
-    desc: "Mobile social app with posts, Reels feed, full-screen video playback — UI designed in Figma",
+    desc: "Mobile social app with posts, Reels feed, full-screen video playback - UI designed in Figma",
     year: "2024", status: "BUILT",
     github: "https://github.com/VanVinh1604/SocialMedia",
   },
