@@ -156,7 +156,6 @@ function TopNav({ activeIdx, scrollTo }) {
       display: "flex", alignItems: "center", justifyContent: "space-between",
       padding: "0 48px", zIndex: 500,
     }}>
-      {/* Logo */}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <div style={{ width: 22, height: 22, borderRadius: 4, background: C.red, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <span style={{ color: "#fff", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
@@ -164,7 +163,6 @@ function TopNav({ activeIdx, scrollTo }) {
         <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3 }}>PORTFOLIO.25</span>
       </div>
 
-      {/* Nav links */}
       <div style={{ display: "flex", gap: 32 }}>
         {NAV_ITEMS.map((item, i) => (
           <button key={i} onClick={() => scrollTo(i)} style={{
@@ -182,7 +180,6 @@ function TopNav({ activeIdx, scrollTo }) {
         ))}
       </div>
 
-      {/* Status */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.red, animation: "pulse_dot 2s ease-in-out infinite" }} />
         <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>AVAILABLE</span>
@@ -233,7 +230,6 @@ function Section({ bgText, children }) {
       background: C.bg, position: "relative", overflow: "hidden",
       display: "flex", flexDirection: "column",
     }}>
-      {/* Noise */}
       <div style={{ position: "absolute", inset: 0, opacity: 0.018, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: "256px", pointerEvents: "none", zIndex: 0 }} />
       <SlotBgText text={bgText} play={inView} />
       <div style={{ position: "relative", zIndex: 2, flex: 1, display: "flex", flexDirection: "column" }}>
@@ -261,7 +257,6 @@ function HeroSection() {
     <Section bgText="INTRODUCE">
       {(inView) => (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 56px", paddingTop: 52, paddingBottom: 28 }}>
-          {/* Top line */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderBottom: `1px solid ${C.line}`, marginBottom: "auto" }}>
             <Reveal inView={inView} delay={0}>
               <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>FRONTEND DEVELOPER</span>
@@ -271,7 +266,6 @@ function HeroSection() {
             </Reveal>
           </div>
 
-          {/* GIANT NAME — editorial hero */}
           <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", transform: `translate(${tilt.x * 0.4}px, ${tilt.y * 0.4}px)`, transition: "transform 0.8s ease" }}>
             {["TIÊU NHẬT", "SANG"].map((line, i) => (
               <SlideUp key={i} inView={inView} delay={120 + i * 110}>
@@ -291,37 +285,21 @@ function HeroSection() {
             ))}
           </div>
 
-          {/* Scroll hint */}
           <Reveal inView={inView} delay={900}>
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
-              padding: "14px 0 4px",
-            }}>
-              {/* Mouse icon */}
-              <div style={{
-                width: 22, height: 34, border: `1.5px solid ${C.dim}`,
-                borderRadius: 12, position: "relative", display: "flex",
-                justifyContent: "center",
-              }}>
-                <div style={{
-                  width: 3, height: 7, background: C.red,
-                  borderRadius: 2, marginTop: 5,
-                  animation: "scroll_wheel 1.6s ease-in-out infinite",
-                }} />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "14px 0 4px" }}>
+              <div style={{ width: 22, height: 34, border: `1.5px solid ${C.dim}`, borderRadius: 12, position: "relative", display: "flex", justifyContent: "center" }}>
+                <div style={{ width: 3, height: 7, background: C.red, borderRadius: 2, marginTop: 5, animation: "scroll_wheel 1.6s ease-in-out infinite" }} />
               </div>
-              <span style={{
-                color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif",
-                letterSpacing: 4, textTransform: "uppercase",
-              }}>Scroll to explore</span>
+              <span style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4, textTransform: "uppercase" }}>Scroll to explore</span>
             </div>
           </Reveal>
 
-          {/* Bottom stats bar */}
+          {/* Bottom stats bar — FIX 2: removed DOWNLOAD CV button entirely */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 0", borderTop: `1px solid ${C.line}` }}>
             {[
               { label: "EXPERIENCE", val: "Student 2022–Now" },
               { label: "PROJECTS", val: "2+ Built" },
-              { label: "STACK", val: "React · Kotlin · Figma" },
+              { label: "STACK", val: "React · HTML/CSS · Kotlin · Figma" },
               { label: "STATUS", val: "Open to Work" },
             ].map((item, i) => (
               <Reveal key={i} inView={inView} delay={500 + i * 80}>
@@ -331,20 +309,6 @@ function HeroSection() {
                 </div>
               </Reveal>
             ))}
-
-            <Reveal inView={inView} delay={760}>
-              <button style={{
-                padding: "10px 24px", background: C.red, border: "none",
-                color: "#fff", fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3,
-                cursor: "pointer", borderRadius: 2,
-                transition: "opacity 0.2s",
-              }}
-                onMouseEnter={e => e.currentTarget.style.opacity = "0.8"}
-                onMouseLeave={e => e.currentTarget.style.opacity = "1"}
-              >
-                DOWNLOAD CV ↓
-              </button>
-            </Reveal>
           </div>
         </div>
       )}
@@ -358,8 +322,6 @@ function AboutSection() {
     <Section bgText="ABOUT ME">
       {(inView) => (
         <div style={{ flex: 1, display: "flex", padding: "0 56px", paddingTop: 52, paddingBottom: 28, alignItems: "center", gap: 64 }}>
-
-          {/* Left — big quote */}
           <div style={{ flex: "0 0 55%" }}>
             <Reveal inView={inView} delay={80}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 32 }}>
@@ -373,8 +335,7 @@ function AboutSection() {
                 <SlideUp key={i} inView={inView} delay={150 + i * 100}>
                   <div style={{
                     fontSize: "clamp(52px, 7vw, 96px)",
-                    fontFamily: "'DM Serif Display', serif",
-                    fontWeight: 900,
+                    fontFamily: "'DM Serif Display', serif", fontWeight: 900,
                     color: i === 0 ? C.white : C.red,
                     fontStyle: i === 1 ? "italic" : "normal",
                     letterSpacing: -2, lineHeight: 0.9,
@@ -385,9 +346,8 @@ function AboutSection() {
 
             <Reveal inView={inView} delay={420}>
               <p style={{ color: C.soft, fontSize: 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: 28 }}>
-              IT student at <strong style={{ color: C.white, fontWeight: 700 }}>HUTECH University</strong> (2022 – present). 
-Passionate about creating modern and user-friendly web interfaces, transforming Figma wireframes into fully functional applications.
-
+                IT student at <strong style={{ color: C.white, fontWeight: 700 }}>HUTECH University</strong> (2022 – present).
+                Passionate about creating modern and user-friendly web interfaces, transforming Figma wireframes into fully functional applications.
               </p>
             </Reveal>
 
@@ -405,7 +365,6 @@ Passionate about creating modern and user-friendly web interfaces, transforming 
             </Reveal>
           </div>
 
-          {/* Right — stats grid */}
           <div style={{ flex: 1 }}>
             {[
               { n: "2022", label: "Started\nHUTECH IT" },
@@ -414,16 +373,8 @@ Passionate about creating modern and user-friendly web interfaces, transforming 
               { n: "100%", label: "Dedication\n& Passion" },
             ].map((s, i) => (
               <Reveal key={i} inView={inView} delay={300 + i * 100} x={30} y={0}>
-                <div style={{
-                  display: "flex", alignItems: "center", gap: 20,
-                  padding: "16px 0",
-                  borderBottom: `1px solid ${C.line}`,
-                }}>
-                  <div style={{
-                    fontSize: 36, fontWeight: 900, fontFamily: "'DM Sans', sans-serif",
-                    color: i === 0 ? C.red : C.white,
-                    minWidth: 80,
-                  }}>{s.n}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "16px 0", borderBottom: `1px solid ${C.line}` }}>
+                  <div style={{ fontSize: 36, fontWeight: 900, fontFamily: "'DM Sans', sans-serif", color: i === 0 ? C.red : C.white, minWidth: 80 }}>{s.n}</div>
                   <div style={{ color: C.soft, fontSize: 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 600 }}>{s.label}</div>
                 </div>
               </Reveal>
@@ -441,7 +392,6 @@ function SkillsSection() {
     <Section bgText="MY SKILLS">
       {(inView) => (
         <div style={{ flex: 1, display: "flex", padding: "0 56px", paddingTop: 52, paddingBottom: 28, flexDirection: "column", justifyContent: "center" }}>
-
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 52 }}>
             <div>
               <Reveal inView={inView} delay={60}>
@@ -468,7 +418,7 @@ function SkillsSection() {
             </Reveal>
           </div>
 
-          {/* Skills as large typographic list */}
+          {/* FIX 1: Removed {s.years} — field does not exist on skill objects */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
             {skills.map((s, i) => (
               <Reveal key={i} inView={inView} delay={350 + i * 60} y={16}>
@@ -477,15 +427,13 @@ function SkillsSection() {
                   borderTop: `1px solid ${C.line}`,
                   borderRight: i % 4 !== 3 ? `1px solid ${C.line}` : "none",
                   paddingRight: 20, paddingLeft: i % 4 !== 0 ? 20 : 0,
-                  cursor: "default",
-                  transition: "background 0.2s",
+                  cursor: "default", transition: "background 0.2s",
                 }}
                   onMouseEnter={e => { e.currentTarget.style.background = C.redFaint; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                  <div style={{ display: "flex", alignItems: "baseline" }}>
                     <span style={{ color: C.white, fontSize: 14, fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
-                    <span style={{ color: C.red, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, fontWeight: 600 }}>{s.years}</span>
                   </div>
                 </div>
               </Reveal>
@@ -504,7 +452,6 @@ function ProjectsSection() {
     <Section bgText="MY WORKS">
       {(inView) => (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 56px", paddingTop: 52, paddingBottom: 28 }}>
-
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
             <div>
               <Reveal inView={inView} delay={60}>
@@ -527,24 +474,19 @@ function ProjectsSection() {
             <Reveal inView={inView} delay={280}>
               <div style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, textAlign: "right" }}>
                 <div>{projects.length} PROJECTS</div>
-                <div style={{ color: C.sub, marginTop: 4 }}>202</div>
+                <div style={{ color: C.sub, marginTop: 4 }}>2026</div>
               </div>
             </Reveal>
           </div>
 
-          {/* Project list — editorial numbered */}
           <div style={{ flex: 1 }}>
             {projects.map((p, i) => (
               <Reveal key={i} inView={inView} delay={300 + i * 110}>
                 <a
-                  href={p.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onMouseEnter={() => setHovered(i)}
-                  onMouseLeave={() => setHovered(null)}
+                  href={p.github} target="_blank" rel="noopener noreferrer"
+                  onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
                   style={{
-                    display: "flex", alignItems: "center", gap: 28,
-                    padding: "20px 0",
+                    display: "flex", alignItems: "center", gap: 28, padding: "20px 0",
                     borderTop: `1px solid ${hovered === i ? C.red + "30" : C.line}`,
                     cursor: "pointer",
                     background: hovered === i ? C.redFaint : "transparent",
@@ -553,51 +495,30 @@ function ProjectsSection() {
                     textDecoration: "none",
                   }}
                 >
-                  {/* Number */}
-                  <div style={{
-                    fontSize: 11, fontFamily: "'DM Sans', sans-serif", color: hovered === i ? C.red : C.sub,
-                    minWidth: 28, transition: "color 0.25s",
-                  }}>{p.num}</div>
-
-                  {/* Name */}
+                  <div style={{ fontSize: 11, fontFamily: "'DM Sans', sans-serif", color: hovered === i ? C.red : C.sub, minWidth: 28, transition: "color 0.25s" }}>{p.num}</div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ color: C.white, fontSize: 17, fontWeight: 800, fontFamily: "'DM Sans', sans-serif", marginBottom: 6 }}>
-                      {p.name}
-                    </div>
+                    <div style={{ color: C.white, fontSize: 17, fontWeight: 800, fontFamily: "'DM Sans', sans-serif", marginBottom: 6 }}>{p.name}</div>
                     <div style={{ color: C.soft, fontSize: 11, fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5, lineHeight: 1.5 }}>{p.desc}</div>
-                    {/* GitHub link label */}
-                    <div style={{
-                      marginTop: 6, display: "flex", alignItems: "center", gap: 5,
-                      color: hovered === i ? C.red : C.dim,
-                      fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2,
-                      transition: "color 0.25s",
-                    }}>
+                    <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, color: hovered === i ? C.red : C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, transition: "color 0.25s" }}>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
                       </svg>
                       {p.github.replace("https://github.com/", "")}
                     </div>
                   </div>
-
-                  {/* Tech tags */}
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
                     {p.tech.map((t, j) => (
                       <span key={j} style={{ padding: "4px 10px", border: `1px solid ${C.dim}`, borderRadius: 2, color: C.soft, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, fontWeight: 600 }}>{t}</span>
                     ))}
                   </div>
-
-                  {/* Year + status */}
                   <div style={{ textAlign: "right", minWidth: 60 }}>
                     <div style={{ color: C.sub, fontSize: 9, fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>{p.year}</div>
                     <div style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>{p.status}</div>
                   </div>
-
-                  {/* Arrow */}
                   <div style={{ color: hovered === i ? C.red : C.sub, fontSize: 14, transition: "color 0.25s, transform 0.25s", transform: hovered === i ? "translateX(4px)" : "none" }}>→</div>
                 </a>
               </Reveal>
             ))}
-            {/* Closing border */}
             <div style={{ borderTop: `1px solid ${C.line}` }} />
           </div>
         </div>
@@ -612,7 +533,6 @@ function ContactSection() {
     <Section bgText="CONTACT">
       {(inView) => (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 56px", paddingTop: 52, paddingBottom: 28, justifyContent: "center" }}>
-
           <Reveal inView={inView} delay={60}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 36 }}>
               <div style={{ width: 14, height: 1, background: C.red }} />
@@ -620,7 +540,6 @@ function ContactSection() {
             </div>
           </Reveal>
 
-          {/* Giant CTA text */}
           <div style={{ marginBottom: 16 }}>
             {["LET'S BUILD", "SOMETHING"].map((line, i) => (
               <SlideUp key={i} inView={inView} delay={120 + i * 100}>
@@ -633,46 +552,28 @@ function ContactSection() {
               </SlideUp>
             ))}
             <SlideUp inView={inView} delay={320}>
-              <div style={{
-                fontSize: "clamp(52px, 8vw, 110px)",
-                fontFamily: "'DM Serif Display', serif", fontWeight: 900,
-                color: "transparent", WebkitTextStroke: `1.5px ${C.sub}`,
-                fontStyle: "italic", letterSpacing: -3, lineHeight: 0.92,
-              }}>TOGETHER.</div>
+              <div style={{ fontSize: "clamp(52px, 8vw, 110px)", fontFamily: "'DM Serif Display', serif", fontWeight: 900, color: "transparent", WebkitTextStroke: `1.5px ${C.sub}`, fontStyle: "italic", letterSpacing: -3, lineHeight: 0.92 }}>TOGETHER.</div>
             </SlideUp>
           </div>
 
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 40 }}>
-            {/* Email */}
             <Reveal inView={inView} delay={480}>
               <div>
                 <div style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3, marginBottom: 10 }}>EMAIL</div>
-                <a href="mailto:nhatsang58@gmail.com" style={{
-                  color: C.white, fontSize: 18, fontFamily: "'DM Sans', sans-serif", textDecoration: "none",
-                  borderBottom: `1px solid ${C.red}`,
-                  paddingBottom: 3, transition: "color 0.2s",
-                }}
+                <a href="mailto:nhatsang58@gmail.com" style={{ color: C.white, fontSize: 18, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", borderBottom: `1px solid ${C.red}`, paddingBottom: 3, transition: "color 0.2s" }}
                   onMouseEnter={e => e.currentTarget.style.color = C.red}
                   onMouseLeave={e => e.currentTarget.style.color = C.white}
-                >
-                  nhatsang58@gmail.com
-                </a>
+                >nhatsang58@gmail.com</a>
               </div>
             </Reveal>
 
-            {/* Social links */}
             <Reveal inView={inView} delay={560}>
               <div style={{ display: "flex", gap: 24 }}>
                 {[
                   { label: "GitHub", href: "https://github.com/nhatsang12" },
                   { label: "Phone", href: "tel:0394757843" },
                 ].map((link, i) => (
-                  <a key={i} href={link.href} style={{
-                    color: C.dim, fontSize: 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2,
-                    textDecoration: "none", padding: "10px 18px",
-                    border: `1px solid ${C.line}`, borderRadius: 2,
-                    transition: "all 0.2s",
-                  }}
+                  <a key={i} href={link.href} style={{ color: C.dim, fontSize: 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, textDecoration: "none", padding: "10px 18px", border: `1px solid ${C.line}`, borderRadius: 2, transition: "all 0.2s" }}
                     onMouseEnter={e => { e.currentTarget.style.color = C.white; e.currentTarget.style.borderColor = C.red + "50"; e.currentTarget.style.background = C.redFaint; }}
                     onMouseLeave={e => { e.currentTarget.style.color = C.dim; e.currentTarget.style.borderColor = C.line; e.currentTarget.style.background = "transparent"; }}
                   >{link.label} ↗</a>
@@ -793,7 +694,6 @@ export default function Portfolio() {
         <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><ContactSection /></div>
       </div>
 
-      {/* Right nav — minimal vertical line */}
       <div style={{ position: "fixed", right: 28, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 8, zIndex: 600 }}>
         {NAV_ITEMS.map((_, i) => (
           <button key={i} onClick={() => scrollTo(i)} style={{
@@ -806,7 +706,6 @@ export default function Portfolio() {
         ))}
       </div>
 
-      {/* Bottom progress bar */}
       <div style={{ position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 600 }}>
         {NAV_ITEMS.map((_, i) => (
           <div key={i} style={{
