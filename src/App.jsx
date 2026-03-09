@@ -413,7 +413,7 @@ function SkillsSection() {
             </div>
             <Reveal inView={inView} delay={300}>
               <p style={{ color: C.dim, fontSize: 13, maxWidth: 300, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", textAlign: "right" }}>
-                Web & Mobile - từ React.js đến Kotlin Android, luôn học thêm công nghệ mới.
+              Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
               </p>
             </Reveal>
           </div>
