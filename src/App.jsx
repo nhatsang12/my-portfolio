@@ -273,11 +273,11 @@ function HeroSection() {
                   fontSize: "clamp(68px, 10.5vw, 148px)",
                   fontFamily: "'DM Serif Display', serif",
                   fontWeight: 900,
-                  color: i === 0 ? C.white : "transparent",
-                  WebkitTextStroke: i === 1 ? `1.5px ${C.white}` : "none",
-                  letterSpacing: i === 0 ? "-4px" : "-3px",
+                  color: i === 0 ? "transparent" : C.white,
+                  WebkitTextStroke: i === 1 ? "none" : `1.5px ${C.white}`,
+                  letterSpacing: i === 0 ? "-3px" : "-4px",
                   lineHeight: 0.92,
-                  fontStyle: i === 1 ? "italic" : "normal",
+                  fontStyle: i === 1 ? "normal" : "italic",
                 }}>
                   {line}
                 </div>
