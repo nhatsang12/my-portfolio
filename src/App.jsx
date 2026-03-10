@@ -34,6 +34,19 @@ const C = {
   white: "#eef2f7", red: "#e8a838", redHalf: "#e8a83855", redFaint: "#e8a83814",
 };
 
+// ─── BREAKPOINT HOOK ──────────────────────────────────────────────────────────
+function useBreakpoint() {
+  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  useEffect(() => {
+    const fn = () => setW(window.innerWidth);
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
+  }, []);
+  const isMobile = w <= 640;
+  const isTablet = w > 640 && w <= 1024;
+  return { isMobile, isTablet, isDesktop: !isMobile && !isTablet, w };
+}
+
 // ─── SLOT MACHINE ─────────────────────────────────────────────────────────────
 function SlotChar({ target, slotDelay, play, wordChars }) {
   const [char, setChar] = useState(" ");
@@ -83,7 +96,7 @@ function SlotBgText({ text, play }) {
       zIndex: 0, pointerEvents: "none", userSelect: "none",
       fontFamily: "'DM Serif Display', serif",
       fontWeight: 900, fontStyle: "italic",
-      fontSize: "clamp(100px, 18vw, 230px)",
+      fontSize: "clamp(60px, 18vw, 230px)",
       lineHeight: 1, letterSpacing: "-4px", whiteSpace: "nowrap",
       color: C.white, opacity: 0.045,
     }}>
@@ -97,7 +110,7 @@ function SlotBgText({ text, play }) {
 }
 
 // ─── CUSTOM CURSOR ────────────────────────────────────────────────────────────
-function Cursor() {
+function Cursor({ isMobile }) {
   const pos = useRef({ x: -100, y: -100 });
   const dotRef = useRef(null);
   const ringRef = useRef(null);
@@ -105,6 +118,7 @@ function Cursor() {
   const raf = useRef(null);
 
   useEffect(() => {
+    if (isMobile) return;
     const move = (e) => { pos.current = { x: e.clientX, y: e.clientY }; };
     window.addEventListener("mousemove", move);
     const tick = () => {
@@ -116,7 +130,9 @@ function Cursor() {
     };
     raf.current = requestAnimationFrame(tick);
     return () => { window.removeEventListener("mousemove", move); cancelAnimationFrame(raf.current); };
-  }, []);
+  }, [isMobile]);
+
+  if (isMobile) return null;
 
   return (
     <>
@@ -147,44 +163,96 @@ function Ticker() {
 }
 
 // ─── TOP NAV ──────────────────────────────────────────────────────────────────
-function TopNav({ activeIdx, scrollTo }) {
+function TopNav({ activeIdx, scrollTo, isMobile }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNav = (i) => { scrollTo(i); setMenuOpen(false); };
+
   return (
-    <div style={{
-      position: "fixed", top: 0, left: 0, right: 0, height: 52,
-      borderBottom: `1px solid ${C.line}`, background: `${C.bg}ee`,
-      backdropFilter: "blur(12px)",
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 48px", zIndex: 500,
-    }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ width: 22, height: 22, borderRadius: 4, background: C.red, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ color: "#fff", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
+    <>
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, height: 52,
+        borderBottom: `1px solid ${C.line}`, background: `${C.bg}ee`,
+        backdropFilter: "blur(12px)",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: isMobile ? "0 20px" : "0 48px", zIndex: 500,
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 22, height: 22, borderRadius: 4, background: C.red, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: "#fff", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
+          </div>
+          <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3 }}>PORTFOLIO.25</span>
         </div>
-        <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3 }}>PORTFOLIO.25</span>
-      </div>
 
-      <div style={{ display: "flex", gap: 32 }}>
-        {NAV_ITEMS.map((item, i) => (
-          <button key={i} onClick={() => scrollTo(i)} style={{
-            background: "none", border: "none", cursor: "pointer",
-            color: i === activeIdx ? C.white : C.mid,
-            fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3,
-            padding: "4px 0", position: "relative",
-            transition: "color 0.3s",
+        {isMobile ? (
+          /* Hamburger button */
+          <button onClick={() => setMenuOpen(o => !o)} style={{
+            background: "none", border: "none", cursor: "pointer", padding: 6,
+            display: "flex", flexDirection: "column", gap: 4, zIndex: 600,
           }}>
-            {i === activeIdx && (
-              <span style={{ position: "absolute", bottom: -1, left: 0, right: 0, height: 1, background: C.red }} />
-            )}
-            {item}
+            {[0, 1, 2].map(i => (
+              <span key={i} style={{
+                display: "block", width: 20, height: 1.5,
+                background: menuOpen ? (i === 1 ? "transparent" : C.red) : C.mid,
+                borderRadius: 1,
+                transform: menuOpen
+                  ? (i === 0 ? "rotate(45deg) translate(4px, 4px)" : i === 2 ? "rotate(-45deg) translate(4px, -4px)" : "none")
+                  : "none",
+                transition: "all 0.25s",
+              }} />
+            ))}
           </button>
-        ))}
+        ) : (
+          <>
+            <div style={{ display: "flex", gap: 32 }}>
+              {NAV_ITEMS.map((item, i) => (
+                <button key={i} onClick={() => scrollTo(i)} style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  color: i === activeIdx ? C.white : C.mid,
+                  fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3,
+                  padding: "4px 0", position: "relative",
+                  transition: "color 0.3s",
+                }}>
+                  {i === activeIdx && (
+                    <span style={{ position: "absolute", bottom: -1, left: 0, right: 0, height: 1, background: C.red }} />
+                  )}
+                  {item}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.red, animation: "pulse_dot 2s ease-in-out infinite" }} />
+              <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>AVAILABLE</span>
+            </div>
+          </>
+        )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.red, animation: "pulse_dot 2s ease-in-out infinite" }} />
-        <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>AVAILABLE</span>
-      </div>
-    </div>
+      {/* Mobile full-screen menu overlay */}
+      {isMobile && menuOpen && (
+        <div style={{
+          position: "fixed", inset: 0, background: `${C.bg}f5`,
+          backdropFilter: "blur(16px)", zIndex: 490,
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 32,
+        }}>
+          {NAV_ITEMS.map((item, i) => (
+            <button key={i} onClick={() => handleNav(i)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              color: i === activeIdx ? C.red : C.white,
+              fontSize: 28, fontFamily: "'DM Serif Display', serif", fontWeight: 900,
+              letterSpacing: 2, fontStyle: i === activeIdx ? "italic" : "normal",
+              transition: "color 0.2s",
+            }}>
+              {item}
+            </button>
+          ))}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16 }}>
+            <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.red, animation: "pulse_dot 2s ease-in-out infinite" }} />
+            <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>AVAILABLE</span>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -240,10 +308,13 @@ function Section({ bgText, children }) {
 }
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
-function HeroSection() {
+function HeroSection({ bp }) {
+  const { isMobile, isTablet } = bp;
+  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    if (isMobile) return;
     const handler = (e) => {
       const x = (e.clientX / window.innerWidth - 0.5) * 14;
       const y = (e.clientY / window.innerHeight - 0.5) * 8;
@@ -251,26 +322,28 @@ function HeroSection() {
     };
     window.addEventListener("mousemove", handler);
     return () => window.removeEventListener("mousemove", handler);
-  }, []);
+  }, [isMobile]);
 
   return (
     <Section bgText="INTRODUCE">
       {(inView) => (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 56px", paddingTop: 52, paddingBottom: 28 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: px, paddingTop: 52, paddingBottom: 28 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderBottom: `1px solid ${C.line}`, marginBottom: "auto" }}>
             <Reveal inView={inView} delay={0}>
               <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>FRONTEND DEVELOPER</span>
             </Reveal>
-            <Reveal inView={inView} delay={60}>
-              <span style={{ color: C.sub, fontSize: 9, fontFamily: "'DM Sans', sans-serif" }}>HỒ CHÍ MINH, VIỆT NAM</span>
-            </Reveal>
+            {!isMobile && (
+              <Reveal inView={inView} delay={60}>
+                <span style={{ color: C.sub, fontSize: 9, fontFamily: "'DM Sans', sans-serif" }}>HỒ CHÍ MINH, VIỆT NAM</span>
+              </Reveal>
+            )}
           </div>
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", transform: `translate(${tilt.x * 0.4}px, ${tilt.y * 0.4}px)`, transition: "transform 0.8s ease" }}>
             {["TIÊU NHẬT", "SANG"].map((line, i) => (
               <SlideUp key={i} inView={inView} delay={120 + i * 110}>
                 <div style={{
-                  fontSize: "clamp(68px, 10.5vw, 148px)",
+                  fontSize: isMobile ? "clamp(48px, 14vw, 80px)" : "clamp(68px, 10.5vw, 148px)",
                   fontFamily: "'DM Serif Display', serif",
                   fontWeight: 900,
                   color: i === 0 ? "transparent" : C.white,
@@ -285,27 +358,34 @@ function HeroSection() {
             ))}
           </div>
 
-          <Reveal inView={inView} delay={900}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "14px 0 4px" }}>
-              <div style={{ width: 22, height: 34, border: `1.5px solid ${C.dim}`, borderRadius: 12, position: "relative", display: "flex", justifyContent: "center" }}>
-                <div style={{ width: 3, height: 7, background: C.red, borderRadius: 2, marginTop: 5, animation: "scroll_wheel 1.6s ease-in-out infinite" }} />
+          {!isMobile && (
+            <Reveal inView={inView} delay={900}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "14px 0 4px" }}>
+                <div style={{ width: 22, height: 34, border: `1.5px solid ${C.dim}`, borderRadius: 12, position: "relative", display: "flex", justifyContent: "center" }}>
+                  <div style={{ width: 3, height: 7, background: C.red, borderRadius: 2, marginTop: 5, animation: "scroll_wheel 1.6s ease-in-out infinite" }} />
+                </div>
+                <span style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4, textTransform: "uppercase" }}>Scroll to explore</span>
               </div>
-              <span style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4, textTransform: "uppercase" }}>Scroll to explore</span>
-            </div>
-          </Reveal>
+            </Reveal>
+          )}
 
-          {/* Bottom stats bar — FIX 2: removed DOWNLOAD CV button entirely */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "20px 0", borderTop: `1px solid ${C.line}` }}>
+          {/* Bottom stats bar */}
+          <div style={{
+            display: "flex", alignItems: "center",
+            justifyContent: isMobile ? "flex-start" : "space-between",
+            flexWrap: "wrap", gap: isMobile ? 16 : 0,
+            padding: "20px 0", borderTop: `1px solid ${C.line}`,
+          }}>
             {[
               { label: "EXPERIENCE", val: "Student 2022–Now" },
               { label: "PROJECTS", val: "2+ Built" },
-              { label: "STACK", val: "React · HTML/CSS · Kotlin · Figma" },
+              { label: "STACK", val: isMobile ? "React · Kotlin · Figma" : "React · HTML/CSS · Kotlin · Figma" },
               { label: "STATUS", val: "Open to Work" },
             ].map((item, i) => (
               <Reveal key={i} inView={inView} delay={500 + i * 80}>
-                <div>
+                <div style={{ minWidth: isMobile ? "45%" : "auto" }}>
                   <div style={{ color: C.mid, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3, marginBottom: 5 }}>{item.label}</div>
-                  <div style={{ color: i === 3 ? C.red : C.white, fontSize: 12, fontFamily: "'DM Sans', sans-serif", fontWeight: 700 }}>{item.val}</div>
+                  <div style={{ color: i === 3 ? C.red : C.white, fontSize: isMobile ? 11 : 12, fontFamily: "'DM Sans', sans-serif", fontWeight: 700 }}>{item.val}</div>
                 </div>
               </Reveal>
             ))}
@@ -317,24 +397,34 @@ function HeroSection() {
 }
 
 // ─── ABOUT ────────────────────────────────────────────────────────────────────
-function AboutSection() {
+function AboutSection({ bp }) {
+  const { isMobile, isTablet } = bp;
+  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
+  const stacked = isMobile || isTablet;
+
   return (
     <Section bgText="ABOUT ME">
       {(inView) => (
-        <div style={{ flex: 1, display: "flex", padding: "0 56px", paddingTop: 52, paddingBottom: 28, alignItems: "center", gap: 64 }}>
-          <div style={{ flex: "0 0 55%" }}>
+        <div style={{
+          flex: 1, display: "flex", padding: px, paddingTop: 52, paddingBottom: 28,
+          alignItems: stacked ? "flex-start" : "center",
+          flexDirection: stacked ? "column" : "row",
+          gap: stacked ? 24 : 64,
+          overflowY: stacked ? "auto" : "visible",
+        }}>
+          <div style={{ flex: stacked ? "none" : "0 0 55%", width: stacked ? "100%" : "auto" }}>
             <Reveal inView={inView} delay={80}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 32 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: stacked ? 16 : 32 }}>
                 <div style={{ width: 14, height: 1, background: C.red }} />
                 <span style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>WHO I AM</span>
               </div>
             </Reveal>
 
-            <div style={{ marginBottom: 32 }}>
+            <div style={{ marginBottom: stacked ? 16 : 32 }}>
               {["ABOUT", "ME"].map((line, i) => (
                 <SlideUp key={i} inView={inView} delay={150 + i * 100}>
                   <div style={{
-                    fontSize: "clamp(52px, 7vw, 96px)",
+                    fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(52px, 7vw, 96px)",
                     fontFamily: "'DM Serif Display', serif", fontWeight: 900,
                     color: i === 0 ? C.white : C.red,
                     fontStyle: i === 1 ? "italic" : "normal",
@@ -345,14 +435,14 @@ function AboutSection() {
             </div>
 
             <Reveal inView={inView} delay={420}>
-              <p style={{ color: C.soft, fontSize: 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: 28 }}>
+              <p style={{ color: C.soft, fontSize: isMobile ? 13 : 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: isMobile ? 16 : 28 }}>
                 IT student at <strong style={{ color: C.red, fontWeight: 700 }}>Ho Chi Minh City University of Technology</strong> (2022 – present).
                 Passionate about creating modern and user-friendly web interfaces, transforming Figma wireframes into fully functional applications.
               </p>
             </Reveal>
 
             <Reveal inView={inView} delay={540}>
-              <div style={{ display: "flex", gap: 12 }}>
+              <div style={{ display: "flex", gap: isMobile ? 8 : 12, flexWrap: "wrap" }}>
                 {["Hard-working", "Detail-Oriented", "Team work"].map((tag, i) => (
                   <span key={i} style={{
                     padding: "6px 14px", border: `1px solid ${i === 0 ? C.red + "88" : C.dim}`,
@@ -365,7 +455,7 @@ function AboutSection() {
             </Reveal>
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, width: stacked ? "100%" : "auto" }}>
             {[
               { n: "2022", label: "Started\nHo Chi Minh City University of Technology" },
               { n: "2+", label: "Projects\nDelivered" },
@@ -373,9 +463,9 @@ function AboutSection() {
               { n: "100%", label: "Dedication\n& Passion" },
             ].map((s, i) => (
               <Reveal key={i} inView={inView} delay={300 + i * 100} x={30} y={0}>
-                <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "16px 0", borderBottom: `1px solid ${C.line}` }}>
-                  <div style={{ fontSize: 36, fontWeight: 900, fontFamily: "'DM Sans', sans-serif", color: C.white, minWidth: 80 }}>{s.n}</div>
-                  <div style={{ color: C.soft, fontSize: 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 600 }}>{s.label}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 12 : 20, padding: isMobile ? "10px 0" : "16px 0", borderBottom: `1px solid ${C.line}` }}>
+                  <div style={{ fontSize: isMobile ? 24 : 36, fontWeight: 900, fontFamily: "'DM Sans', sans-serif", color: C.white, minWidth: isMobile ? 56 : 80 }}>{s.n}</div>
+                  <div style={{ color: C.soft, fontSize: isMobile ? 9 : 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 600 }}>{s.label}</div>
                 </div>
               </Reveal>
             ))}
@@ -387,12 +477,16 @@ function AboutSection() {
 }
 
 // ─── SKILLS ───────────────────────────────────────────────────────────────────
-function SkillsSection() {
+function SkillsSection({ bp }) {
+  const { isMobile, isTablet } = bp;
+  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
+  const cols = isMobile || isTablet ? 2 : 4;
+
   return (
     <Section bgText="MY SKILLS">
       {(inView) => (
-        <div style={{ flex: 1, display: "flex", padding: "0 56px", paddingTop: 52, paddingBottom: 28, flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 52 }}>
+        <div style={{ flex: 1, display: "flex", padding: px, paddingTop: 52, paddingBottom: 28, flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: isMobile ? 28 : 52 }}>
             <div>
               <Reveal inView={inView} delay={60}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
@@ -403,7 +497,7 @@ function SkillsSection() {
               {["MY", "STACK"].map((line, i) => (
                 <SlideUp key={i} inView={inView} delay={140 + i * 100}>
                   <div style={{
-                    fontSize: "clamp(44px, 6vw, 80px)",
+                    fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(44px, 6vw, 80px)",
                     fontFamily: "'DM Serif Display', serif", fontWeight: 900,
                     color: i === 0 ? C.white : C.red, fontStyle: i === 1 ? "italic" : "normal",
                     letterSpacing: -2, lineHeight: 0.9,
@@ -411,34 +505,43 @@ function SkillsSection() {
                 </SlideUp>
               ))}
             </div>
-            <Reveal inView={inView} delay={300}>
-              <p style={{ color: C.dim, fontSize: 13, maxWidth: 300, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", textAlign: "right" }}>
-                Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
-              </p>
-            </Reveal>
+            {!isMobile && (
+              <Reveal inView={inView} delay={300}>
+                <p style={{ color: C.dim, fontSize: 13, maxWidth: 300, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", textAlign: "right" }}>
+                  Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
+                </p>
+              </Reveal>
+            )}
           </div>
 
-          {/* FIX 1: Removed {s.years} — field does not exist on skill objects */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }}>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 0 }}>
             {skills.map((s, i) => (
               <Reveal key={i} inView={inView} delay={350 + i * 60} y={16}>
                 <div style={{
-                  padding: "18px 0",
+                  padding: isMobile ? "14px 0" : "18px 0",
                   borderTop: `1px solid ${C.line}`,
-                  borderRight: i % 4 !== 3 ? `1px solid ${C.line}` : "none",
-                  paddingRight: 20, paddingLeft: i % 4 !== 0 ? 20 : 0,
+                  borderRight: i % cols !== cols - 1 ? `1px solid ${C.line}` : "none",
+                  paddingRight: 20, paddingLeft: i % cols !== 0 ? 20 : 0,
                   cursor: "default", transition: "background 0.2s",
                 }}
                   onMouseEnter={e => { e.currentTarget.style.background = C.redFaint; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                 >
                   <div style={{ display: "flex", alignItems: "baseline" }}>
-                    <span style={{ color: C.white, fontSize: 14, fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
+                    <span style={{ color: C.white, fontSize: isMobile ? 12 : 14, fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
                   </div>
                 </div>
               </Reveal>
             ))}
           </div>
+
+          {isMobile && (
+            <Reveal inView={inView} delay={700}>
+              <p style={{ color: C.dim, fontSize: 12, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", marginTop: 24 }}>
+                Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
+              </p>
+            </Reveal>
+          )}
         </div>
       )}
     </Section>
@@ -446,13 +549,18 @@ function SkillsSection() {
 }
 
 // ─── PROJECTS ─────────────────────────────────────────────────────────────────
-function ProjectsSection() {
+function ProjectsSection({ bp }) {
+  const { isMobile, isTablet } = bp;
+  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
+  const negMx = isMobile ? -20 : isTablet ? -36 : -56;
+  const posPx = isMobile ? 20 : isTablet ? 36 : 56;
   const [hovered, setHovered] = useState(null);
+
   return (
     <Section bgText="MY WORKS">
       {(inView) => (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 56px", paddingTop: 52, paddingBottom: 28 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 40 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: px, paddingTop: 52, paddingBottom: 28 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: isMobile ? 20 : 40 }}>
             <div>
               <Reveal inView={inView} delay={60}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
@@ -463,7 +571,7 @@ function ProjectsSection() {
               {["MY", "PROJECTS"].map((line, i) => (
                 <SlideUp key={i} inView={inView} delay={140 + i * 100}>
                   <div style={{
-                    fontSize: "clamp(40px, 5.5vw, 72px)",
+                    fontSize: isMobile ? "clamp(36px, 10vw, 56px)" : "clamp(40px, 5.5vw, 72px)",
                     fontFamily: "'DM Serif Display', serif", fontWeight: 900,
                     color: i === 0 ? C.white : C.red, fontStyle: i === 1 ? "italic" : "normal",
                     letterSpacing: -2, lineHeight: 0.9,
@@ -471,51 +579,63 @@ function ProjectsSection() {
                 </SlideUp>
               ))}
             </div>
-            <Reveal inView={inView} delay={280}>
-              <div style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, textAlign: "right" }}>
-                <div>{projects.length} PROJECTS</div>
-                <div style={{ color: C.sub, marginTop: 4 }}>2026</div>
-              </div>
-            </Reveal>
+            {!isMobile && (
+              <Reveal inView={inView} delay={280}>
+                <div style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, textAlign: "right" }}>
+                  <div>{projects.length} PROJECTS</div>
+                  <div style={{ color: C.sub, marginTop: 4 }}>2026</div>
+                </div>
+              </Reveal>
+            )}
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, overflowY: isMobile ? "auto" : "visible" }}>
             {projects.map((p, i) => (
               <Reveal key={i} inView={inView} delay={300 + i * 110}>
                 <a
                   href={p.github} target="_blank" rel="noopener noreferrer"
                   onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
                   style={{
-                    display: "flex", alignItems: "center", gap: 28, padding: "20px 0",
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    alignItems: isMobile ? "flex-start" : "center",
+                    gap: isMobile ? 10 : 28,
+                    padding: isMobile ? "14px 0" : "20px 0",
                     borderTop: `1px solid ${hovered === i ? C.red + "30" : C.line}`,
                     cursor: "pointer",
                     background: hovered === i ? C.redFaint : "transparent",
                     transition: "background 0.25s, border-color 0.25s",
-                    marginLeft: -56, marginRight: -56, paddingLeft: 56, paddingRight: 56,
+                    marginLeft: negMx, marginRight: negMx, paddingLeft: posPx, paddingRight: posPx,
                     textDecoration: "none",
                   }}
                 >
-                  <div style={{ fontSize: 11, fontFamily: "'DM Sans', sans-serif", color: hovered === i ? C.red : C.sub, minWidth: 28, transition: "color 0.25s" }}>{p.num}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: C.white, fontSize: 17, fontWeight: 800, fontFamily: "'DM Sans', sans-serif", marginBottom: 6 }}>{p.name}</div>
-                    <div style={{ color: C.soft, fontSize: 11, fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5, lineHeight: 1.5 }}>{p.desc}</div>
-                    <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, color: hovered === i ? C.red : C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, transition: "color 0.25s" }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
-                      </svg>
-                      {p.github.replace("https://github.com/", "")}
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, width: "100%" }}>
+                    <div style={{ fontSize: 11, fontFamily: "'DM Sans', sans-serif", color: hovered === i ? C.red : C.sub, minWidth: 28, transition: "color 0.25s" }}>{p.num}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: C.white, fontSize: isMobile ? 15 : 17, fontWeight: 800, fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>{p.name}</div>
+                      <div style={{ color: C.soft, fontSize: isMobile ? 10 : 11, fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5, lineHeight: 1.5 }}>{p.desc}</div>
+                      <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, color: hovered === i ? C.red : C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, transition: "color 0.25s" }}>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                        </svg>
+                        {p.github.replace("https://github.com/", "")}
+                      </div>
                     </div>
+                    <div style={{ color: hovered === i ? C.red : C.sub, fontSize: 14, transition: "color 0.25s, transform 0.25s", transform: hovered === i ? "translateX(4px)" : "none" }}>→</div>
                   </div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                    {p.tech.map((t, j) => (
-                      <span key={j} style={{ padding: "4px 10px", border: `1px solid ${C.dim}`, borderRadius: 2, color: C.soft, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, fontWeight: 600 }}>{t}</span>
-                    ))}
-                  </div>
-                  <div style={{ textAlign: "right", minWidth: 60 }}>
-                    <div style={{ color: C.sub, fontSize: 9, fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>{p.year}</div>
-                    <div style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>{p.status}</div>
-                  </div>
-                  <div style={{ color: hovered === i ? C.red : C.sub, fontSize: 14, transition: "color 0.25s, transform 0.25s", transform: hovered === i ? "translateX(4px)" : "none" }}>→</div>
+                  {!isMobile && (
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                      {p.tech.map((t, j) => (
+                        <span key={j} style={{ padding: "4px 10px", border: `1px solid ${C.dim}`, borderRadius: 2, color: C.soft, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, fontWeight: 600 }}>{t}</span>
+                      ))}
+                    </div>
+                  )}
+                  {!isMobile && (
+                    <div style={{ textAlign: "right", minWidth: 60 }}>
+                      <div style={{ color: C.sub, fontSize: 9, fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>{p.year}</div>
+                      <div style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>{p.status}</div>
+                    </div>
+                  )}
                 </a>
               </Reveal>
             ))}
@@ -528,23 +648,26 @@ function ProjectsSection() {
 }
 
 // ─── CONTACT ──────────────────────────────────────────────────────────────────
-function ContactSection() {
+function ContactSection({ bp }) {
+  const { isMobile, isTablet } = bp;
+  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
+
   return (
     <Section bgText="CONTACT">
       {(inView) => (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: "0 56px", paddingTop: 52, paddingBottom: 28, justifyContent: "center" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: px, paddingTop: 52, paddingBottom: 28, justifyContent: "center" }}>
           <Reveal inView={inView} delay={60}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 36 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: isMobile ? 20 : 36 }}>
               <div style={{ width: 14, height: 1, background: C.red }} />
               <span style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>GET IN TOUCH</span>
             </div>
           </Reveal>
 
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: isMobile ? 8 : 16 }}>
             {["LET'S BUILD", "SOMETHING"].map((line, i) => (
               <SlideUp key={i} inView={inView} delay={120 + i * 100}>
                 <div style={{
-                  fontSize: "clamp(52px, 8vw, 110px)",
+                  fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(52px, 8vw, 110px)",
                   fontFamily: "'DM Serif Display', serif", fontWeight: 900,
                   color: i === 0 ? C.white : C.red, fontStyle: i === 1 ? "italic" : "normal",
                   letterSpacing: -3, lineHeight: 0.92,
@@ -552,15 +675,22 @@ function ContactSection() {
               </SlideUp>
             ))}
             <SlideUp inView={inView} delay={320}>
-              <div style={{ fontSize: "clamp(52px, 8vw, 110px)", fontFamily: "'DM Serif Display', serif", fontWeight: 900, color: "transparent", WebkitTextStroke: `1.5px ${C.sub}`, fontStyle: "italic", letterSpacing: -3, lineHeight: 0.92 }}>TOGETHER.</div>
+              <div style={{ fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(52px, 8vw, 110px)", fontFamily: "'DM Serif Display', serif", fontWeight: 900, color: "transparent", WebkitTextStroke: `1.5px ${C.sub}`, fontStyle: "italic", letterSpacing: -3, lineHeight: 0.92 }}>TOGETHER.</div>
             </SlideUp>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginTop: 40 }}>
+          <div style={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            justifyContent: "space-between",
+            alignItems: isMobile ? "flex-start" : "flex-end",
+            gap: isMobile ? 20 : 0,
+            marginTop: isMobile ? 24 : 40,
+          }}>
             <Reveal inView={inView} delay={480}>
               <div>
                 <div style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3, marginBottom: 10 }}>EMAIL</div>
-                <a href="mailto:nhatsang58@gmail.com" style={{ color: C.white, fontSize: 18, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", borderBottom: `1px solid ${C.red}`, paddingBottom: 3, transition: "color 0.2s" }}
+                <a href="mailto:nhatsang58@gmail.com" style={{ color: C.white, fontSize: isMobile ? 14 : 18, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", borderBottom: `1px solid ${C.red}`, paddingBottom: 3, transition: "color 0.2s" }}
                   onMouseEnter={e => e.currentTarget.style.color = C.red}
                   onMouseLeave={e => e.currentTarget.style.color = C.white}
                 >nhatsang58@gmail.com</a>
@@ -568,7 +698,7 @@ function ContactSection() {
             </Reveal>
 
             <Reveal inView={inView} delay={560}>
-              <div style={{ display: "flex", gap: 24 }}>
+              <div style={{ display: "flex", gap: 12 }}>
                 {[
                   { label: "GitHub", href: "https://github.com/nhatsang12" },
                   { label: "Phone", href: "tel:0394757843" },
@@ -589,6 +719,9 @@ function ContactSection() {
 
 // ─── ROOT ─────────────────────────────────────────────────────────────────────
 export default function Portfolio() {
+  const bp = useBreakpoint();
+  const { isMobile } = bp;
+
   const containerRef = useRef(null);
   const [activeIdx, setActiveIdx] = useState(0);
   const isScrolling = useRef(false);
@@ -649,13 +782,13 @@ export default function Portfolio() {
   };
 
   return (
-    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: C.bg, cursor: "none" }}>
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: C.bg, cursor: isMobile ? "auto" : "none" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'DM Sans', sans-serif; }
         ::-webkit-scrollbar { display: none; }
-        a, button { cursor: none; }
+        a, button { cursor: ${isMobile ? "pointer" : "none"}; }
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-33.33%); } }
         @keyframes pulse_dot {
           0%,100% { opacity:1; box-shadow:0 0 5px #e8a838; }
@@ -670,8 +803,8 @@ export default function Portfolio() {
         }
       `}</style>
 
-      <Cursor />
-      <TopNav activeIdx={activeIdx} scrollTo={scrollTo} />
+      <Cursor isMobile={isMobile} />
+      <TopNav activeIdx={activeIdx} scrollTo={scrollTo} isMobile={isMobile} />
 
       <div
         ref={containerRef}
@@ -683,30 +816,34 @@ export default function Portfolio() {
           display: "flex", width: "100%", height: "100%",
           overflowX: "auto", overflowY: "hidden",
           scrollSnapType: "x mandatory",
-          cursor: dragging ? "grabbing" : "none",
+          cursor: dragging ? "grabbing" : (isMobile ? "auto" : "none"),
           userSelect: "none",
         }}
       >
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><HeroSection /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><AboutSection /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><SkillsSection /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><ProjectsSection /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><ContactSection /></div>
+        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><HeroSection bp={bp} /></div>
+        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><AboutSection bp={bp} /></div>
+        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><SkillsSection bp={bp} /></div>
+        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><ProjectsSection bp={bp} /></div>
+        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><ContactSection bp={bp} /></div>
       </div>
 
-      <div style={{ position: "fixed", right: 28, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 8, zIndex: 600 }}>
-        {NAV_ITEMS.map((_, i) => (
-          <button key={i} onClick={() => scrollTo(i)} style={{
-            width: 2, height: i === activeIdx ? 32 : 10,
-            background: i === activeIdx ? C.red : C.sub,
-            border: "none", padding: 0, borderRadius: 2,
-            transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
-            boxShadow: i === activeIdx ? `0 0 12px ${C.red}` : "none",
-          }} />
-        ))}
-      </div>
+      {/* Right dot nav — hidden on mobile */}
+      {!isMobile && (
+        <div style={{ position: "fixed", right: 28, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 8, zIndex: 600 }}>
+          {NAV_ITEMS.map((_, i) => (
+            <button key={i} onClick={() => scrollTo(i)} style={{
+              width: 2, height: i === activeIdx ? 32 : 10,
+              background: i === activeIdx ? C.red : C.sub,
+              border: "none", padding: 0, borderRadius: 2,
+              transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
+              boxShadow: i === activeIdx ? `0 0 12px ${C.red}` : "none",
+            }} />
+          ))}
+        </div>
+      )}
 
-      <div style={{ position: "fixed", bottom: 28, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 600 }}>
+      {/* Bottom progress dots */}
+      <div style={{ position: "fixed", bottom: isMobile ? 36 : 28, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 600 }}>
         {NAV_ITEMS.map((_, i) => (
           <div key={i} style={{
             height: 2, borderRadius: 2,
