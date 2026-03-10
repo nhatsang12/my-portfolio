@@ -29,9 +29,10 @@ const projects = [
 
 const TICKER_ITEMS = ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS", "Node.js", "Kotlin", "Figma", "Git", "Android Studio", "React Router", "XML"];
 const C = {
-  bg: "#0c1220", paper: "#111a2e", line: "#1e2d46",
-  sub: "#2e3f5c", dim: "#5a7094", mid: "#8a9bba", soft: "#b4c2d8", light: "#d6dfe9",
-  white: "#eef2f7", red: "#e8a838", redHalf: "#e8a83855", redFaint: "#e8a83814",
+  bg: "#04080f", paper: "#070e1a", line: "#0e1c30",
+  sub: "#1a2e48", dim: "#4a6480", mid: "#7a93b0", soft: "#a8bdd0", light: "#ccdae8",
+  white: "#f1f5f9", red: "#f1f5f9", redHalf: "#f1f5f940", redFaint: "#f1f5f910",
+  gradient: "radial-gradient(ellipse at 50% 50%, #0d1f38 0%, #070e1a 45%, #04080f 100%)",
 };
 
 // ─── BREAKPOINT HOOK ──────────────────────────────────────────────────────────
@@ -295,7 +296,7 @@ function Section({ bgText, children }) {
   return (
     <div ref={ref} style={{
       width: "100vw", height: "100vh", flexShrink: 0,
-      background: C.bg, position: "relative", overflow: "hidden",
+      background: C.gradient, position: "relative", overflow: "hidden",
       display: "flex", flexDirection: "column",
     }}>
       <div style={{ position: "absolute", inset: 0, opacity: 0.018, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: "256px", pointerEvents: "none", zIndex: 0 }} />
@@ -791,8 +792,8 @@ export default function Portfolio() {
         a, button { cursor: ${isMobile ? "pointer" : "none"}; }
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-33.33%); } }
         @keyframes pulse_dot {
-          0%,100% { opacity:1; box-shadow:0 0 5px #e8a838; }
-          50%      { opacity:.35; box-shadow:0 0 2px #e8a83844; }
+          0%,100% { opacity:1; box-shadow:0 0 5px #f1f5f9; }
+          50%      { opacity:.35; box-shadow:0 0 2px #f1f5f940; }
         }
         @keyframes rv_fadein { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
         @keyframes scroll_wheel {
