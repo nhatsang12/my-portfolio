@@ -28,9 +28,13 @@ const projects = [
 ];
 
 const TICKER_ITEMS = ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS", "Node.js", "Kotlin", "Figma", "Git", "Android Studio", "React Router", "XML"];
+
+// ─── COLORS ───────────────────────────────────────────────────────────────────
+// CHANGED: Brightened sub, dim, mid, soft, line for better readability on dark bg
 const C = {
-  bg: "#04080f", paper: "#070e1a", line: "#0e1c30",
-  sub: "#1a2e48", dim: "#4a6480", mid: "#7a93b0", soft: "#a8bdd0", light: "#ccdae8",
+  bg: "#04080f", paper: "#070e1a", line: "#1b3050",       // line: #0e1c30 → #1b3050
+  sub: "#3d5f82", dim: "#7090b4", mid: "#90aac8",         // sub: #1a2e48→#3d5f82, dim: #4a6480→#7090b4, mid: #7a93b0→#90aac8
+  soft: "#b8cede", light: "#d6e6f2",                      // soft: #a8bdd0→#b8cede, light: #ccdae8→#d6e6f2
   white: "#f1f5f9", red: "#f1f5f9", redHalf: "#f1f5f940", redFaint: "#f1f5f910",
   gradient: "radial-gradient(ellipse at 50% 50%, #0d1f38 0%, #070e1a 45%, #04080f 100%)",
 };
@@ -446,7 +450,7 @@ function AboutSection({ bp }) {
               <div style={{ display: "flex", gap: isMobile ? 8 : 12, flexWrap: "wrap" }}>
                 {["Hard-working", "Detail-Oriented", "Team work"].map((tag, i) => (
                   <span key={i} style={{
-                    padding: "6px 14px", border: `1px solid ${i === 0 ? C.red + "88" : C.dim}`,
+                    padding: "6px 14px", border: `1px solid ${i === 0 ? C.red + "88" : C.sub}`,
                     borderRadius: 2, color: i === 0 ? C.red : C.soft,
                     fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, fontWeight: 600,
                     background: i === 0 ? C.redFaint : "transparent",
@@ -627,7 +631,7 @@ function ProjectsSection({ bp }) {
                   {!isMobile && (
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
                       {p.tech.map((t, j) => (
-                        <span key={j} style={{ padding: "4px 10px", border: `1px solid ${C.dim}`, borderRadius: 2, color: C.soft, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, fontWeight: 600 }}>{t}</span>
+                        <span key={j} style={{ padding: "4px 10px", border: `1px solid ${C.sub}`, borderRadius: 2, color: C.soft, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, fontWeight: 600 }}>{t}</span>
                       ))}
                     </div>
                   )}
