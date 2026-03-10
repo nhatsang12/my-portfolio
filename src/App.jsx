@@ -4,9 +4,9 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const NAV_ITEMS = ["HOME", "ABOUT", "SKILLS", "WORK", "CONTACT"];
 
 const skills = [
-  { name: "React.js" }, { name: "JavaScript"},
+  { name: "React.js" }, { name: "JavaScript" },
   { name: "HTML / CSS" }, { name: "Tailwind CSS" },
-  { name: "Node.js" }, { name: "Kotlin"},
+  { name: "Node.js" }, { name: "Kotlin" },
   { name: "Figma" }, { name: "Git / GitHub" },
 ];
 
@@ -29,9 +29,9 @@ const projects = [
 
 const TICKER_ITEMS = ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS", "Node.js", "Kotlin", "Figma", "Git", "Android Studio", "React Router", "XML"];
 const C = {
-  bg: "#060606", paper: "#0d0d0d", line: "#222",
-  sub: "#3a3a3a", dim: "#666", mid: "#999", soft: "#bbb", light: "#ddd",
-  white: "#f2f2f2", red: "#e52b1e", redHalf: "#e52b1e55", redFaint: "#e52b1e14",
+  bg: "#0c1220", paper: "#111a2e", line: "#1e2d46",
+  sub: "#2e3f5c", dim: "#5a7094", mid: "#8a9bba", soft: "#b4c2d8", light: "#d6dfe9",
+  white: "#eef2f7", red: "#e8a838", redHalf: "#e8a83855", redFaint: "#e8a83814",
 };
 
 // ─── SLOT MACHINE ─────────────────────────────────────────────────────────────
@@ -61,7 +61,7 @@ function SlotChar({ target, slotDelay, play, wordChars }) {
       }, 55);
     }, slotDelay);
     return () => { clearTimeout(timerRef.current); clearInterval(intervalRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [play]);
 
   return (
@@ -346,7 +346,7 @@ function AboutSection() {
 
             <Reveal inView={inView} delay={420}>
               <p style={{ color: C.soft, fontSize: 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: 28 }}>
-                IT student at <strong style={{ color: C.white, fontWeight: 700 }}>HUTECH University</strong> (2022 – present).
+                IT student at <strong style={{ color: C.red, fontWeight: 700 }}>Ho Chi Minh City University of Technology</strong> (2022 – present).
                 Passionate about creating modern and user-friendly web interfaces, transforming Figma wireframes into fully functional applications.
               </p>
             </Reveal>
@@ -367,14 +367,14 @@ function AboutSection() {
 
           <div style={{ flex: 1 }}>
             {[
-              { n: "2022", label: "Started\nHUTECH IT" },
+              { n: "2022", label: "Started\nHo Chi Minh City University of Technology" },
               { n: "2+", label: "Projects\nDelivered" },
               { n: "2+", label: "Tech\nPlatforms" },
               { n: "100%", label: "Dedication\n& Passion" },
             ].map((s, i) => (
               <Reveal key={i} inView={inView} delay={300 + i * 100} x={30} y={0}>
                 <div style={{ display: "flex", alignItems: "center", gap: 20, padding: "16px 0", borderBottom: `1px solid ${C.line}` }}>
-                  <div style={{ fontSize: 36, fontWeight: 900, fontFamily: "'DM Sans', sans-serif", color: i === 0 ? C.red : C.white, minWidth: 80 }}>{s.n}</div>
+                  <div style={{ fontSize: 36, fontWeight: 900, fontFamily: "'DM Sans', sans-serif", color: C.white, minWidth: 80 }}>{s.n}</div>
                   <div style={{ color: C.soft, fontSize: 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 600 }}>{s.label}</div>
                 </div>
               </Reveal>
@@ -413,7 +413,7 @@ function SkillsSection() {
             </div>
             <Reveal inView={inView} delay={300}>
               <p style={{ color: C.dim, fontSize: 13, maxWidth: 300, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", textAlign: "right" }}>
-              Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
+                Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
               </p>
             </Reveal>
           </div>
@@ -501,7 +501,7 @@ function ProjectsSection() {
                     <div style={{ color: C.soft, fontSize: 11, fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5, lineHeight: 1.5 }}>{p.desc}</div>
                     <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, color: hovered === i ? C.red : C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, transition: "color 0.25s" }}>
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
                       </svg>
                       {p.github.replace("https://github.com/", "")}
                     </div>
@@ -658,8 +658,8 @@ export default function Portfolio() {
         a, button { cursor: none; }
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-33.33%); } }
         @keyframes pulse_dot {
-          0%,100% { opacity:1; box-shadow:0 0 5px #e52b1e; }
-          50%      { opacity:.35; box-shadow:0 0 2px #e52b1e44; }
+          0%,100% { opacity:1; box-shadow:0 0 5px #e8a838; }
+          50%      { opacity:.35; box-shadow:0 0 2px #e8a83844; }
         }
         @keyframes rv_fadein { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
         @keyframes scroll_wheel {
