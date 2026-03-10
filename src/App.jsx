@@ -183,9 +183,9 @@ function TopNav({ activeIdx, scrollTo, isMobile }) {
         padding: isMobile ? "0 20px" : "0 48px", zIndex: 500,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 22, height: 22, borderRadius: 4, background: C.red, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
-          </div>
+        <div style={{ width: 22, height: 22, borderRadius: 4, background: "#0d2447", border: "1px solid #1b3050", display: "flex", alignItems: "center", justifyContent: "center" }}>
+  <span style={{ color: "#90aac8", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
+</div>
           <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3 }}>PORTFOLIO.25</span>
         </div>
 
