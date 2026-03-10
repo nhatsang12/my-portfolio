@@ -4,10 +4,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 const NAV_ITEMS = ["HOME", "ABOUT", "SKILLS", "WORK", "CONTACT"];
 
 const skills = [
-  { name: "React.js" }, { name: "JavaScript" },
-  { name: "HTML / CSS" }, { name: "Tailwind CSS" },
-  { name: "Node.js" }, { name: "Kotlin" },
-  { name: "Figma" }, { name: "Git / GitHub" },
+  { name: "React.js", type: "FRAMEWORK" },
+  { name: "JavaScript", type: "LANGUAGE" },
+  { name: "HTML / CSS", type: "LAYOUT" },
+  { name: "Tailwind CSS", type: "STYLING" },
+  { name: "Node.js", type: "BACKEND" },
+  { name: "Kotlin", type: "LANGUAGE" },
+  { name: "Figma", type: "DESIGN" },
+  { name: "Git / GitHub", type: "TOOL" },
 ];
 
 const projects = [
@@ -532,7 +536,8 @@ function SkillsSection({ bp }) {
                   onMouseEnter={e => { e.currentTarget.style.background = C.redFaint; }}
                   onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
                 >
-                  <div style={{ display: "flex", alignItems: "baseline" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    <span style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1.5, fontWeight: 600 }}>{s.type}</span>
                     <span style={{ color: C.white, fontSize: isMobile ? 12 : 14, fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
                   </div>
                 </div>
