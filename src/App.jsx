@@ -187,9 +187,9 @@ function TopNav({ activeIdx, scrollTo, isMobile }) {
         padding: isMobile ? "0 20px" : "0 48px", zIndex: 500,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ width: 22, height: 22, borderRadius: 4, background: "#0d2447", border: "1px solid #1b3050", display: "flex", alignItems: "center", justifyContent: "center" }}>
-  <span style={{ color: "#90aac8", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
-</div>
+          <div style={{ width: 22, height: 22, borderRadius: 4, background: "#0d2447", border: "1px solid #1b3050", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span style={{ color: "#90aac8", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
+          </div>
           <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3 }}>PORTFOLIO.25</span>
         </div>
 
@@ -445,7 +445,7 @@ function AboutSection({ bp }) {
 
             <Reveal inView={inView} delay={420}>
               <p style={{ color: C.soft, fontSize: isMobile ? 13 : 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: isMobile ? 16 : 28 }}>
-                IT student at <strong style={{ color: C.red, fontWeight: 700 }}>Ho Chi Minh City University of Technology</strong> (2022 – present).
+                IT student at <strong style={{ color: C.red, fontWeight: 700 }}>Ho Chi Minh City University of Technology</strong> (2022 - present).
                 Passionate about creating modern and user-friendly web interfaces, transforming Figma wireframes into fully functional applications.
               </p>
             </Reveal>
@@ -517,7 +517,7 @@ function SkillsSection({ bp }) {
             {!isMobile && (
               <Reveal inView={inView} delay={300}>
                 <p style={{ color: C.dim, fontSize: 13, maxWidth: 300, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", textAlign: "right" }}>
-                  Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
+                  Web & Mobile - from React.js to Kotlin Android, always learning new technologies.
                 </p>
               </Reveal>
             )}
