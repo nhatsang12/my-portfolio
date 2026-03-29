@@ -3,7 +3,6 @@ import {
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarDays,
-  ExternalLink,
   GitBranch,
   GraduationCap,
   Mail,
@@ -420,15 +419,6 @@ export default function App() {
                   >
                     <Mail size={16} />
                     nhatsang58@gmail.com
-                  </a>
-                  <a
-                    href="https://my-portfolio-indol-ten-81.vercel.app"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-400/50 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-100"
-                  >
-                    Portfolio
-                    <ExternalLink size={14} />
                   </a>
                 </div>
               </div>
