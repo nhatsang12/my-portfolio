@@ -1,870 +1,683 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArrowUpRight,
+  BriefcaseBusiness,
+  CalendarDays,
+  ExternalLink,
+  GitBranch,
+  GraduationCap,
+  Mail,
+  MapPin,
+  Menu,
+  Phone,
+  Sparkles,
+  X,
+} from "lucide-react";
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-const NAV_ITEMS = ["HOME", "ABOUT", "SKILLS", "WORK", "CONTACT"];
-
-const skills = [
-  { name: "React.js", type: "FRAMEWORK" },
-  { name: "JavaScript", type: "LANGUAGE" },
-  { name: "HTML / CSS", type: "LAYOUT" },
-  { name: "Tailwind CSS", type: "STYLING" },
-  { name: "Node.js", type: "BACKEND" },
-  { name: "Kotlin", type: "LANGUAGE" },
-  { name: "Figma", type: "DESIGN" },
-  { name: "Git / GitHub", type: "TOOL" },
+const NAV_ITEMS = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "Contact" },
 ];
 
-const projects = [
+const SKILLS = [
+  { name: "HTML", type: "Frontend" },
+  { name: "CSS", type: "Frontend" },
+  { name: "JavaScript", type: "Frontend" },
+  { name: "React JS", type: "Frontend" },
+  { name: "Tailwind CSS", type: "Frontend" },
+  { name: "UI Animation", type: "Frontend" },
+  { name: "Figma", type: "Design" },
+  { name: "Git / GitHub", type: "Tools" },
+];
+
+const PROJECTS = [
   {
-    num: "01", name: "Event Ticketing Platform",
+    name: "Event Ticketing Platform",
+    period: "Feb 2026 - Mar 2026",
+    team: "Team size 3",
+    status: "Built",
     tech: ["React.js", "React Router", "Tailwind CSS", "Lucide React"],
-    desc: "Online ticketing system: search, book, pay for tickets - admin dashboard with KPI & revenue chart",
-    year: "2026 - now", status: "BUILT",
+    bullets: [
+      "Online ticketing system with search, booking and payment flow",
+      "Admin dashboard with KPI stats and per-event revenue chart",
+      "Role-based access with protected routes",
+    ],
     github: "https://github.com/nhatsang12/EventTicketMangement",
   },
   {
-    num: "02", name: "Social App (Mobile)",
-    tech: ["Kotlin", "XML", "Figma", "Android Studio"],
-    desc: "Mobile social app with posts, Reels feed, full-screen video playback - UI designed in Figma",
-    year: "2025", status: "BUILT",
-    github: "https://github.com/VanVinh1604/SocialMedia",
+    name: "Estoria",
+    period: "Mar 2026 - Present",
+    team: "Team size 2",
+    status: "In Progress",
+    tech: ["Next.js 16", "JavaScript", "Tailwind CSS", "Recharts"],
+    bullets: [
+      "Modern UI with smooth transitions",
+      "KYC + OCR flow reducing manual admin processing",
+      "Leaflet filtering and VNPay + PayPal integration",
+    ],
+    github: "https://github.com/ltrungkien2307/estateplaform",
   },
 ];
 
-const TICKER_ITEMS = ["React.js", "JavaScript", "HTML", "CSS", "Tailwind CSS", "Node.js", "Kotlin", "Figma", "Git", "Android Studio", "React Router", "XML"];
+const STRENGTHS = ["Hard-working", "Detail-oriented", "Teamwork", "Problem Solving"];
 
-// ─── COLORS ───────────────────────────────────────────────────────────────────
-// CHANGED: Brightened sub, dim, mid, soft, line for better readability on dark bg
-const C = {
-  bg: "#04080f", paper: "#070e1a", line: "#1b3050",       // line: #0e1c30 → #1b3050
-  sub: "#3d5f82", dim: "#7090b4", mid: "#90aac8",         // sub: #1a2e48→#3d5f82, dim: #4a6480→#7090b4, mid: #7a93b0→#90aac8
-  soft: "#b8cede", light: "#d6e6f2",                      // soft: #a8bdd0→#b8cede, light: #ccdae8→#d6e6f2
-  white: "#f1f5f9", red: "#f1f5f9", redHalf: "#f1f5f940", redFaint: "#f1f5f910",
-  gradient: "radial-gradient(ellipse at 50% 50%, #0d1f38 0%, #070e1a 45%, #04080f 100%)",
-};
-
-// ─── BREAKPOINT HOOK ──────────────────────────────────────────────────────────
-function useBreakpoint() {
-  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
-  useEffect(() => {
-    const fn = () => setW(window.innerWidth);
-    window.addEventListener("resize", fn);
-    return () => window.removeEventListener("resize", fn);
-  }, []);
-  const isMobile = w <= 640;
-  const isTablet = w > 640 && w <= 1024;
-  return { isMobile, isTablet, isDesktop: !isMobile && !isTablet, w };
-}
-
-// ─── SLOT MACHINE ─────────────────────────────────────────────────────────────
-function SlotChar({ target, slotDelay, play, wordChars }) {
-  const [char, setChar] = useState(" ");
-  const [flash, setFlash] = useState(false);
-  const timerRef = useRef(null);
-  const intervalRef = useRef(null);
-  const hasPlayed = useRef(false);
-
-  useEffect(() => {
-    if (!play || hasPlayed.current) return;
-    hasPlayed.current = true;
-    clearTimeout(timerRef.current);
-    clearInterval(intervalRef.current);
-    const letters = wordChars.filter(c => c !== " ");
-    const reel = [...letters, target];
-    let count = 0;
-    timerRef.current = setTimeout(() => {
-      intervalRef.current = setInterval(() => {
-        if (count < reel.length - 1) { setChar(reel[count % (reel.length - 1)]); count++; }
-        else {
-          clearInterval(intervalRef.current);
-          setChar(target); setFlash(true);
-          setTimeout(() => setFlash(false), 280);
-        }
-      }, 55);
-    }, slotDelay);
-    return () => { clearTimeout(timerRef.current); clearInterval(intervalRef.current); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [play]);
-
-  return (
-    <span style={{
-      display: "inline-block",
-      color: flash ? C.red : "inherit",
-      textShadow: flash ? `0 0 30px ${C.red}88` : "none",
-      transition: flash ? "color 0.05s, text-shadow 0.05s" : "color 0.28s, text-shadow 0.28s",
-    }}>{char}</span>
-  );
-}
-
-function SlotBgText({ text, play }) {
-  const chars = text.split("");
-  const wordChars = chars.filter(c => c !== " ");
-  return (
-    <div aria-hidden="true" style={{
-      position: "absolute", bottom: "-0.04em", left: "-0.01em",
-      zIndex: 0, pointerEvents: "none", userSelect: "none",
-      fontFamily: "'DM Serif Display', serif",
-      fontWeight: 900, fontStyle: "italic",
-      fontSize: "clamp(60px, 18vw, 230px)",
-      lineHeight: 1, letterSpacing: "-4px", whiteSpace: "nowrap",
-      color: C.white, opacity: 0.045,
-    }}>
-      {chars.map((ch, i) =>
-        ch === " "
-          ? <span key={i} style={{ display: "inline-block", width: "0.28em" }} />
-          : <SlotChar key={i} target={ch} slotDelay={i * 40} play={play} wordChars={wordChars} />
-      )}
-    </div>
-  );
-}
-
-// ─── CUSTOM CURSOR ────────────────────────────────────────────────────────────
-function Cursor({ isMobile }) {
-  const pos = useRef({ x: -100, y: -100 });
-  const dotRef = useRef(null);
-  const ringRef = useRef(null);
-  const ring = useRef({ x: -100, y: -100 });
-  const raf = useRef(null);
-
-  useEffect(() => {
-    if (isMobile) return;
-    const move = (e) => { pos.current = { x: e.clientX, y: e.clientY }; };
-    window.addEventListener("mousemove", move);
-    const tick = () => {
-      ring.current.x += (pos.current.x - ring.current.x) * 0.12;
-      ring.current.y += (pos.current.y - ring.current.y) * 0.12;
-      if (dotRef.current) dotRef.current.style.transform = `translate(${pos.current.x - 3}px,${pos.current.y - 3}px)`;
-      if (ringRef.current) ringRef.current.style.transform = `translate(${ring.current.x - 16}px,${ring.current.y - 16}px)`;
-      raf.current = requestAnimationFrame(tick);
-    };
-    raf.current = requestAnimationFrame(tick);
-    return () => { window.removeEventListener("mousemove", move); cancelAnimationFrame(raf.current); };
-  }, [isMobile]);
-
-  if (isMobile) return null;
-
-  return (
-    <>
-      <div ref={dotRef} style={{ position: "fixed", top: 0, left: 0, width: 6, height: 6, borderRadius: "50%", background: C.red, zIndex: 9999, pointerEvents: "none", willChange: "transform" }} />
-      <div ref={ringRef} style={{ position: "fixed", top: 0, left: 0, width: 32, height: 32, borderRadius: "50%", border: `1px solid ${C.red}66`, zIndex: 9998, pointerEvents: "none", willChange: "transform", transition: "width 0.2s, height 0.2s" }} />
-    </>
-  );
-}
-
-// ─── TICKER ───────────────────────────────────────────────────────────────────
-function Ticker() {
-  const repeated = [...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS];
-  return (
-    <div style={{
-      position: "fixed", bottom: 0, left: 0, right: 0, height: 28,
-      borderTop: `1px solid ${C.line}`, background: C.bg,
-      overflow: "hidden", zIndex: 500, display: "flex", alignItems: "center",
-    }}>
-      <div style={{ display: "flex", animation: "ticker 22s linear infinite", whiteSpace: "nowrap" }}>
-        {repeated.map((item, i) => (
-          <span key={i} style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3, marginRight: 40 }}>
-            <span style={{ color: C.red, marginRight: 12 }}>✦</span>{item}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─── TOP NAV ──────────────────────────────────────────────────────────────────
-function TopNav({ activeIdx, scrollTo, isMobile }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const handleNav = (i) => { scrollTo(i); setMenuOpen(false); };
-
-  return (
-    <>
-      <div style={{
-        position: "fixed", top: 0, left: 0, right: 0, height: 52,
-        borderBottom: `1px solid ${C.line}`, background: `${C.bg}ee`,
-        backdropFilter: "blur(12px)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: isMobile ? "0 20px" : "0 48px", zIndex: 500,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 22, height: 22, borderRadius: 4, background: "#0d2447", border: "1px solid #1b3050", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#90aac8", fontSize: 9, fontWeight: 900, fontFamily: "'DM Sans', sans-serif" }}>TNS</span>
-          </div>
-          <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3 }}>PORTFOLIO.25</span>
-        </div>
-
-        {isMobile ? (
-          /* Hamburger button */
-          <button onClick={() => setMenuOpen(o => !o)} style={{
-            background: "none", border: "none", cursor: "pointer", padding: 6,
-            display: "flex", flexDirection: "column", gap: 4, zIndex: 600,
-          }}>
-            {[0, 1, 2].map(i => (
-              <span key={i} style={{
-                display: "block", width: 20, height: 1.5,
-                background: menuOpen ? (i === 1 ? "transparent" : C.red) : C.mid,
-                borderRadius: 1,
-                transform: menuOpen
-                  ? (i === 0 ? "rotate(45deg) translate(4px, 4px)" : i === 2 ? "rotate(-45deg) translate(4px, -4px)" : "none")
-                  : "none",
-                transition: "all 0.25s",
-              }} />
-            ))}
-          </button>
-        ) : (
-          <>
-            <div style={{ display: "flex", gap: 32 }}>
-              {NAV_ITEMS.map((item, i) => (
-                <button key={i} onClick={() => scrollTo(i)} style={{
-                  background: "none", border: "none", cursor: "pointer",
-                  color: i === activeIdx ? C.white : C.mid,
-                  fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3,
-                  padding: "4px 0", position: "relative",
-                  transition: "color 0.3s",
-                }}>
-                  {i === activeIdx && (
-                    <span style={{ position: "absolute", bottom: -1, left: 0, right: 0, height: 1, background: C.red }} />
-                  )}
-                  {item}
-                </button>
-              ))}
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.red, animation: "pulse_dot 2s ease-in-out infinite" }} />
-              <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>AVAILABLE</span>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Mobile full-screen menu overlay */}
-      {isMobile && menuOpen && (
-        <div style={{
-          position: "fixed", inset: 0, background: `${C.bg}f5`,
-          backdropFilter: "blur(16px)", zIndex: 490,
-          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 32,
-        }}>
-          {NAV_ITEMS.map((item, i) => (
-            <button key={i} onClick={() => handleNav(i)} style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: i === activeIdx ? C.red : C.white,
-              fontSize: 28, fontFamily: "'DM Serif Display', serif", fontWeight: 900,
-              letterSpacing: 2, fontStyle: i === activeIdx ? "italic" : "normal",
-              transition: "color 0.2s",
-            }}>
-              {item}
-            </button>
-          ))}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16 }}>
-            <div style={{ width: 5, height: 5, borderRadius: "50%", background: C.red, animation: "pulse_dot 2s ease-in-out infinite" }} />
-            <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>AVAILABLE</span>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
-// ─── HOOKS ────────────────────────────────────────────────────────────────────
-function useInView(threshold = 0.3) {
+function useSectionReveal(threshold = 0.1) {
   const ref = useRef(null);
-  const [inView, setInView] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setInView(true); }, { threshold });
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
+    const node = ref.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.unobserve(node);
+        }
+      },
+      {
+        threshold,
+        rootMargin: "0px 0px -4% 0px",
+      }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
   }, [threshold]);
-  return [ref, inView];
+
+  return [ref, isVisible];
 }
 
-function Reveal({ children, inView, delay = 0, x = 0, y = 20 }) {
-  return (
-    <div style={{
-      opacity: inView ? 1 : 0,
-      transform: inView ? "translate(0,0)" : `translate(${x}px,${y}px)`,
-      transition: `opacity 0.8s ease ${delay}ms, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
-    }}>{children}</div>
-  );
-}
+export default function App() {
+  const rootRef = useRef(null);
+  const progressBarRef = useRef(null);
+  const timeRef = useRef(null);
+  const tiltRafMapRef = useRef(new WeakMap());
+  const tiltPointMapRef = useRef(new WeakMap());
+  const [openMenu, setOpenMenu] = useState(false);
+  const [liteMotion, setLiteMotion] = useState(false);
+  const [homeRef, homeVisible] = useSectionReveal(0.05);
+  const [aboutRef, aboutVisible] = useSectionReveal(0.08);
+  const [skillsRef, skillsVisible] = useSectionReveal(0.08);
+  const [projectsRef, projectsVisible] = useSectionReveal(0.08);
+  const [contactRef, contactVisible] = useSectionReveal(0.08);
 
-function SlideUp({ children, inView, delay = 0 }) {
-  return (
-    <div style={{ overflow: "hidden" }}>
-      <div style={{
-        transform: inView ? "translateY(0%)" : "translateY(110%)",
-        transition: `transform 1s cubic-bezier(0.16,1,0.3,1) ${delay}ms`,
-      }}>{children}</div>
-    </div>
-  );
-}
+  const groupedSkills = useMemo(() => {
+    return SKILLS.reduce((acc, item) => {
+      if (!acc[item.type]) acc[item.type] = [];
+      acc[item.type].push(item.name);
+      return acc;
+    }, {});
+  }, []);
 
-// ─── SECTION WRAPPER ──────────────────────────────────────────────────────────
-function Section({ bgText, children }) {
-  const [ref, inView] = useInView(0.25);
-  return (
-    <div ref={ref} style={{
-      width: "100vw", height: "100vh", flexShrink: 0,
-      background: C.gradient, position: "relative", overflow: "hidden",
-      display: "flex", flexDirection: "column",
-    }}>
-      <div style={{ position: "absolute", inset: 0, opacity: 0.018, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`, backgroundSize: "256px", pointerEvents: "none", zIndex: 0 }} />
-      <SlotBgText text={bgText} play={inView} />
-      <div style={{ position: "relative", zIndex: 2, flex: 1, display: "flex", flexDirection: "column" }}>
-        {typeof children === "function" ? children(inView) : children}
-      </div>
-    </div>
-  );
-}
-
-// ─── HERO ─────────────────────────────────────────────────────────────────────
-function HeroSection({ bp }) {
-  const { isMobile, isTablet } = bp;
-  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const jumpTo = (id) => {
+    setOpenMenu(false);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
-    if (isMobile) return;
-    const handler = (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 14;
-      const y = (e.clientY / window.innerHeight - 0.5) * 8;
-      setTilt({ x, y });
+    let timer = 0;
+    const formatter = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+
+    const syncClock = () => {
+      if (timeRef.current) {
+        timeRef.current.textContent = `${formatter.format(new Date())} (GMT+7)`;
+      }
+      const msUntilNextSecond = 1000 - (Date.now() % 1000);
+      timer = window.setTimeout(syncClock, msUntilNextSecond);
     };
-    window.addEventListener("mousemove", handler);
-    return () => window.removeEventListener("mousemove", handler);
-  }, [isMobile]);
 
-  return (
-    <Section bgText="INTRODUCE">
-      {(inView) => (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: px, paddingTop: 52, paddingBottom: 28 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderBottom: `1px solid ${C.line}`, marginBottom: "auto" }}>
-            <Reveal inView={inView} delay={0}>
-              <span style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>FRONTEND DEVELOPER</span>
-            </Reveal>
-            {!isMobile && (
-              <Reveal inView={inView} delay={60}>
-                <span style={{ color: C.sub, fontSize: 9, fontFamily: "'DM Sans', sans-serif" }}>HỒ CHÍ MINH, VIỆT NAM</span>
-              </Reveal>
-            )}
-          </div>
-
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", transform: `translate(${tilt.x * 0.4}px, ${tilt.y * 0.4}px)`, transition: "transform 0.8s ease" }}>
-            {["TIÊU NHẬT", "SANG"].map((line, i) => (
-              <SlideUp key={i} inView={inView} delay={120 + i * 110}>
-                <div style={{
-                  fontSize: isMobile ? "clamp(48px, 14vw, 80px)" : "clamp(68px, 10.5vw, 148px)",
-                  fontFamily: "'DM Serif Display', serif",
-                  fontWeight: 900,
-                  color: i === 0 ? "transparent" : C.white,
-                  WebkitTextStroke: i === 1 ? "none" : `1.5px ${C.white}`,
-                  letterSpacing: i === 0 ? "-3px" : "-4px",
-                  lineHeight: 0.92,
-                  fontStyle: i === 1 ? "normal" : "italic",
-                }}>
-                  {line}
-                </div>
-              </SlideUp>
-            ))}
-          </div>
-
-          {!isMobile && (
-            <Reveal inView={inView} delay={900}>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "14px 0 4px" }}>
-                <div style={{ width: 22, height: 34, border: `1.5px solid ${C.dim}`, borderRadius: 12, position: "relative", display: "flex", justifyContent: "center" }}>
-                  <div style={{ width: 3, height: 7, background: C.red, borderRadius: 2, marginTop: 5, animation: "scroll_wheel 1.6s ease-in-out infinite" }} />
-                </div>
-                <span style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4, textTransform: "uppercase" }}>Scroll to explore</span>
-              </div>
-            </Reveal>
-          )}
-
-          {/* Bottom stats bar */}
-          <div style={{
-            display: "flex", alignItems: "center",
-            justifyContent: isMobile ? "flex-start" : "space-between",
-            flexWrap: "wrap", gap: isMobile ? 16 : 0,
-            padding: "20px 0", borderTop: `1px solid ${C.line}`,
-          }}>
-            {[
-              { label: "EXPERIENCE", val: "Student 2022–Now" },
-              { label: "PROJECTS", val: "2+ Built" },
-              { label: "STACK", val: isMobile ? "React · Kotlin · Figma" : "React · HTML/CSS · Kotlin · Figma" },
-              { label: "STATUS", val: "Open to Work" },
-            ].map((item, i) => (
-              <Reveal key={i} inView={inView} delay={500 + i * 80}>
-                <div style={{ minWidth: isMobile ? "45%" : "auto" }}>
-                  <div style={{ color: C.mid, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3, marginBottom: 5 }}>{item.label}</div>
-                  <div style={{ color: i === 3 ? C.red : C.white, fontSize: isMobile ? 11 : 12, fontFamily: "'DM Sans', sans-serif", fontWeight: 700 }}>{item.val}</div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      )}
-    </Section>
-  );
-}
-
-// ─── ABOUT ────────────────────────────────────────────────────────────────────
-function AboutSection({ bp }) {
-  const { isMobile, isTablet } = bp;
-  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
-  const stacked = isMobile || isTablet;
-
-  return (
-    <Section bgText="ABOUT ME">
-      {(inView) => (
-        <div style={{
-          flex: 1, display: "flex", padding: px, paddingTop: 52, paddingBottom: 28,
-          alignItems: stacked ? "flex-start" : "center",
-          flexDirection: stacked ? "column" : "row",
-          gap: stacked ? 24 : 64,
-          overflowY: stacked ? "auto" : "visible",
-        }}>
-          <div style={{ flex: stacked ? "none" : "0 0 55%", width: stacked ? "100%" : "auto" }}>
-            <Reveal inView={inView} delay={80}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: stacked ? 16 : 32 }}>
-                <div style={{ width: 14, height: 1, background: C.red }} />
-                <span style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>WHO I AM</span>
-              </div>
-            </Reveal>
-
-            <div style={{ marginBottom: stacked ? 16 : 32 }}>
-              {["ABOUT", "ME"].map((line, i) => (
-                <SlideUp key={i} inView={inView} delay={150 + i * 100}>
-                  <div style={{
-                    fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(52px, 7vw, 96px)",
-                    fontFamily: "'DM Serif Display', serif", fontWeight: 900,
-                    color: i === 0 ? C.white : C.red,
-                    fontStyle: i === 1 ? "italic" : "normal",
-                    letterSpacing: -2, lineHeight: 0.9,
-                  }}>{line}</div>
-                </SlideUp>
-              ))}
-            </div>
-
-            <Reveal inView={inView} delay={420}>
-              <p style={{ color: C.soft, fontSize: isMobile ? 13 : 15, lineHeight: 1.85, maxWidth: 480, fontFamily: "'DM Sans', sans-serif", marginBottom: isMobile ? 16 : 28 }}>
-                IT student at <strong style={{ color: C.red, fontWeight: 700 }}>Ho Chi Minh City University of Technology</strong> (2022 - present).
-                Passionate about creating modern and user-friendly web interfaces, transforming Figma wireframes into fully functional applications.
-              </p>
-            </Reveal>
-
-            <Reveal inView={inView} delay={540}>
-              <div style={{ display: "flex", gap: isMobile ? 8 : 12, flexWrap: "wrap" }}>
-                {["Hard-working", "Detail-Oriented", "Team work"].map((tag, i) => (
-                  <span key={i} style={{
-                    padding: "6px 14px", border: `1px solid ${i === 0 ? C.red + "88" : C.sub}`,
-                    borderRadius: 2, color: i === 0 ? C.red : C.soft,
-                    fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, fontWeight: 600,
-                    background: i === 0 ? C.redFaint : "transparent",
-                  }}>{tag}</span>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-
-          <div style={{ flex: 1, width: stacked ? "100%" : "auto" }}>
-            {[
-              { n: "2022", label: "Started\nHo Chi Minh City University of Technology" },
-              { n: "2+", label: "Projects\nDelivered" },
-              { n: "2+", label: "Tech\nPlatforms" },
-              { n: "100%", label: "Dedication\n& Passion" },
-            ].map((s, i) => (
-              <Reveal key={i} inView={inView} delay={300 + i * 100} x={30} y={0}>
-                <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 12 : 20, padding: isMobile ? "10px 0" : "16px 0", borderBottom: `1px solid ${C.line}` }}>
-                  <div style={{ fontSize: isMobile ? 24 : 36, fontWeight: 900, fontFamily: "'DM Sans', sans-serif", color: C.white, minWidth: isMobile ? 56 : 80 }}>{s.n}</div>
-                  <div style={{ color: C.soft, fontSize: isMobile ? 9 : 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, lineHeight: 1.6, whiteSpace: "pre-line", fontWeight: 600 }}>{s.label}</div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      )}
-    </Section>
-  );
-}
-
-// ─── SKILLS ───────────────────────────────────────────────────────────────────
-function SkillsSection({ bp }) {
-  const { isMobile, isTablet } = bp;
-  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
-  const cols = isMobile || isTablet ? 2 : 4;
-
-  return (
-    <Section bgText="MY SKILLS">
-      {(inView) => (
-        <div style={{ flex: 1, display: "flex", padding: px, paddingTop: 52, paddingBottom: 28, flexDirection: "column", justifyContent: "center" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: isMobile ? 28 : 52 }}>
-            <div>
-              <Reveal inView={inView} delay={60}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
-                  <div style={{ width: 14, height: 1, background: C.red }} />
-                  <span style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>WHAT I USE</span>
-                </div>
-              </Reveal>
-              {["MY", "STACK"].map((line, i) => (
-                <SlideUp key={i} inView={inView} delay={140 + i * 100}>
-                  <div style={{
-                    fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(44px, 6vw, 80px)",
-                    fontFamily: "'DM Serif Display', serif", fontWeight: 900,
-                    color: i === 0 ? C.white : C.red, fontStyle: i === 1 ? "italic" : "normal",
-                    letterSpacing: -2, lineHeight: 0.9,
-                  }}>{line}</div>
-                </SlideUp>
-              ))}
-            </div>
-            {!isMobile && (
-              <Reveal inView={inView} delay={300}>
-                <p style={{ color: C.dim, fontSize: 13, maxWidth: 300, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", textAlign: "right" }}>
-                  Web & Mobile - from React.js to Kotlin Android, always learning new technologies.
-                </p>
-              </Reveal>
-            )}
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 0 }}>
-            {skills.map((s, i) => (
-              <Reveal key={i} inView={inView} delay={350 + i * 60} y={16}>
-                <div style={{
-                  padding: isMobile ? "14px 0" : "18px 0",
-                  borderTop: `1px solid ${C.line}`,
-                  borderRight: i % cols !== cols - 1 ? `1px solid ${C.line}` : "none",
-                  paddingRight: 20, paddingLeft: i % cols !== 0 ? 20 : 0,
-                  cursor: "default", transition: "background 0.2s",
-                }}
-                  onMouseEnter={e => { e.currentTarget.style.background = C.redFaint; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
-                >
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                    <span style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1.5, fontWeight: 600 }}>{s.type}</span>
-                    <span style={{ color: C.white, fontSize: isMobile ? 12 : 14, fontWeight: 700, fontFamily: "'DM Sans', sans-serif" }}>{s.name}</span>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-
-          {isMobile && (
-            <Reveal inView={inView} delay={700}>
-              <p style={{ color: C.dim, fontSize: 12, lineHeight: 1.7, fontFamily: "'DM Sans', sans-serif", marginTop: 24 }}>
-                Web & Mobile — from React.js to Kotlin Android, always learning new technologies.
-              </p>
-            </Reveal>
-          )}
-        </div>
-      )}
-    </Section>
-  );
-}
-
-// ─── PROJECTS ─────────────────────────────────────────────────────────────────
-function ProjectsSection({ bp }) {
-  const { isMobile, isTablet } = bp;
-  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
-  const negMx = isMobile ? -20 : isTablet ? -36 : -56;
-  const posPx = isMobile ? 20 : isTablet ? 36 : 56;
-  const [hovered, setHovered] = useState(null);
-
-  return (
-    <Section bgText="MY WORKS">
-      {(inView) => (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: px, paddingTop: 52, paddingBottom: 28 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: isMobile ? 20 : 40 }}>
-            <div>
-              <Reveal inView={inView} delay={60}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-                  <div style={{ width: 14, height: 1, background: C.red }} />
-                  <span style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>SELECTED WORK</span>
-                </div>
-              </Reveal>
-              {["MY", "PROJECTS"].map((line, i) => (
-                <SlideUp key={i} inView={inView} delay={140 + i * 100}>
-                  <div style={{
-                    fontSize: isMobile ? "clamp(36px, 10vw, 56px)" : "clamp(40px, 5.5vw, 72px)",
-                    fontFamily: "'DM Serif Display', serif", fontWeight: 900,
-                    color: i === 0 ? C.white : C.red, fontStyle: i === 1 ? "italic" : "normal",
-                    letterSpacing: -2, lineHeight: 0.9,
-                  }}>{line}</div>
-                </SlideUp>
-              ))}
-            </div>
-            {!isMobile && (
-              <Reveal inView={inView} delay={280}>
-                <div style={{ color: C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, textAlign: "right" }}>
-                  <div>{projects.length} PROJECTS</div>
-                  <div style={{ color: C.sub, marginTop: 4 }}>2026</div>
-                </div>
-              </Reveal>
-            )}
-          </div>
-
-          <div style={{ flex: 1, overflowY: isMobile ? "auto" : "visible" }}>
-            {projects.map((p, i) => (
-              <Reveal key={i} inView={inView} delay={300 + i * 110}>
-                <a
-                  href={p.github} target="_blank" rel="noopener noreferrer"
-                  onMouseEnter={() => setHovered(i)} onMouseLeave={() => setHovered(null)}
-                  style={{
-                    display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    alignItems: isMobile ? "flex-start" : "center",
-                    gap: isMobile ? 10 : 28,
-                    padding: isMobile ? "14px 0" : "20px 0",
-                    borderTop: `1px solid ${hovered === i ? C.red + "30" : C.line}`,
-                    cursor: "pointer",
-                    background: hovered === i ? C.redFaint : "transparent",
-                    transition: "background 0.25s, border-color 0.25s",
-                    marginLeft: negMx, marginRight: negMx, paddingLeft: posPx, paddingRight: posPx,
-                    textDecoration: "none",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, width: "100%" }}>
-                    <div style={{ fontSize: 11, fontFamily: "'DM Sans', sans-serif", color: hovered === i ? C.red : C.sub, minWidth: 28, transition: "color 0.25s" }}>{p.num}</div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: C.white, fontSize: isMobile ? 15 : 17, fontWeight: 800, fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>{p.name}</div>
-                      <div style={{ color: C.soft, fontSize: isMobile ? 10 : 11, fontFamily: "'DM Sans', sans-serif", letterSpacing: 0.5, lineHeight: 1.5 }}>{p.desc}</div>
-                      <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 5, color: hovered === i ? C.red : C.dim, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, transition: "color 0.25s" }}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
-                        </svg>
-                        {p.github.replace("https://github.com/", "")}
-                      </div>
-                    </div>
-                    <div style={{ color: hovered === i ? C.red : C.sub, fontSize: 14, transition: "color 0.25s, transform 0.25s", transform: hovered === i ? "translateX(4px)" : "none" }}>→</div>
-                  </div>
-                  {!isMobile && (
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                      {p.tech.map((t, j) => (
-                        <span key={j} style={{ padding: "4px 10px", border: `1px solid ${C.sub}`, borderRadius: 2, color: C.soft, fontSize: 9, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, fontWeight: 600 }}>{t}</span>
-                      ))}
-                    </div>
-                  )}
-                  {!isMobile && (
-                    <div style={{ textAlign: "right", minWidth: 60 }}>
-                      <div style={{ color: C.sub, fontSize: 9, fontFamily: "'DM Sans', sans-serif", marginBottom: 4 }}>{p.year}</div>
-                      <div style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2 }}>{p.status}</div>
-                    </div>
-                  )}
-                </a>
-              </Reveal>
-            ))}
-            <div style={{ borderTop: `1px solid ${C.line}` }} />
-          </div>
-        </div>
-      )}
-    </Section>
-  );
-}
-
-// ─── CONTACT ──────────────────────────────────────────────────────────────────
-function ContactSection({ bp }) {
-  const { isMobile, isTablet } = bp;
-  const px = isMobile ? "0 20px" : isTablet ? "0 36px" : "0 56px";
-
-  return (
-    <Section bgText="CONTACT">
-      {(inView) => (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: px, paddingTop: 52, paddingBottom: 28, justifyContent: "center" }}>
-          <Reveal inView={inView} delay={60}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: isMobile ? 20 : 36 }}>
-              <div style={{ width: 14, height: 1, background: C.red }} />
-              <span style={{ color: C.red, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 4 }}>GET IN TOUCH</span>
-            </div>
-          </Reveal>
-
-          <div style={{ marginBottom: isMobile ? 8 : 16 }}>
-            {["LET'S BUILD", "SOMETHING"].map((line, i) => (
-              <SlideUp key={i} inView={inView} delay={120 + i * 100}>
-                <div style={{
-                  fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(52px, 8vw, 110px)",
-                  fontFamily: "'DM Serif Display', serif", fontWeight: 900,
-                  color: i === 0 ? C.white : C.red, fontStyle: i === 1 ? "italic" : "normal",
-                  letterSpacing: -3, lineHeight: 0.92,
-                }}>{line}</div>
-              </SlideUp>
-            ))}
-            <SlideUp inView={inView} delay={320}>
-              <div style={{ fontSize: isMobile ? "clamp(36px, 10vw, 64px)" : "clamp(52px, 8vw, 110px)", fontFamily: "'DM Serif Display', serif", fontWeight: 900, color: "transparent", WebkitTextStroke: `1.5px ${C.sub}`, fontStyle: "italic", letterSpacing: -3, lineHeight: 0.92 }}>TOGETHER.</div>
-            </SlideUp>
-          </div>
-
-          <div style={{
-            display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            justifyContent: "space-between",
-            alignItems: isMobile ? "flex-start" : "flex-end",
-            gap: isMobile ? 20 : 0,
-            marginTop: isMobile ? 24 : 40,
-          }}>
-            <Reveal inView={inView} delay={480}>
-              <div>
-                <div style={{ color: C.dim, fontSize: 8, fontFamily: "'DM Sans', sans-serif", letterSpacing: 3, marginBottom: 10 }}>EMAIL</div>
-                <a href="mailto:nhatsang58@gmail.com" style={{ color: C.white, fontSize: isMobile ? 14 : 18, fontFamily: "'DM Sans', sans-serif", textDecoration: "none", borderBottom: `1px solid ${C.red}`, paddingBottom: 3, transition: "color 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.color = C.red}
-                  onMouseLeave={e => e.currentTarget.style.color = C.white}
-                >nhatsang58@gmail.com</a>
-              </div>
-            </Reveal>
-
-            <Reveal inView={inView} delay={560}>
-              <div style={{ display: "flex", gap: 12 }}>
-                {[
-                  { label: "GitHub", href: "https://github.com/nhatsang12" },
-                  { label: "Phone", href: "tel:0394757843" },
-                ].map((link, i) => (
-                  <a key={i} href={link.href} style={{ color: C.dim, fontSize: 10, fontFamily: "'DM Sans', sans-serif", letterSpacing: 2, textDecoration: "none", padding: "10px 18px", border: `1px solid ${C.line}`, borderRadius: 2, transition: "all 0.2s" }}
-                    onMouseEnter={e => { e.currentTarget.style.color = C.white; e.currentTarget.style.borderColor = C.red + "50"; e.currentTarget.style.background = C.redFaint; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = C.dim; e.currentTarget.style.borderColor = C.line; e.currentTarget.style.background = "transparent"; }}
-                  >{link.label} ↗</a>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      )}
-    </Section>
-  );
-}
-
-// ─── ROOT ─────────────────────────────────────────────────────────────────────
-export default function Portfolio() {
-  const bp = useBreakpoint();
-  const { isMobile } = bp;
-
-  const containerRef = useRef(null);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const isScrolling = useRef(false);
-  const isDragging = useRef(false);
-  const dragStartX = useRef(0);
-  const dragStartScroll = useRef(0);
-  const [dragging, setDragging] = useState(false);
-  const touchStartX = useRef(0);
-
-  const scrollTo = useCallback((idx) => {
-    const el = containerRef.current;
-    if (!el) return;
-    const clamped = Math.max(0, Math.min(idx, 4));
-    el.scrollTo({ left: clamped * el.offsetWidth, behavior: "smooth" });
-    setActiveIdx(clamped);
+    syncClock();
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const h = () => setActiveIdx(Math.round(el.scrollLeft / el.offsetWidth));
-    el.addEventListener("scroll", h, { passive: true });
-    return () => el.removeEventListener("scroll", h);
+    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const coarsePointerQuery = window.matchMedia("(hover: none), (pointer: coarse)");
+
+    const evaluateMotionProfile = () => {
+      const lowCpu = typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 6;
+      const lowMemory = typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 6;
+      setLiteMotion(reducedMotionQuery.matches || coarsePointerQuery.matches || lowCpu || lowMemory);
+    };
+
+    const listen = (query) => {
+      if (typeof query.addEventListener === "function") {
+        query.addEventListener("change", evaluateMotionProfile);
+        return () => query.removeEventListener("change", evaluateMotionProfile);
+      }
+
+      if (typeof query.addListener === "function") {
+        query.addListener(evaluateMotionProfile);
+        return () => query.removeListener(evaluateMotionProfile);
+      }
+
+      return () => {};
+    };
+
+    evaluateMotionProfile();
+    const cleanupReduced = listen(reducedMotionQuery);
+    const cleanupCoarse = listen(coarsePointerQuery);
+
+    return () => {
+      cleanupReduced();
+      cleanupCoarse();
+    };
   }, []);
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const onWheel = (e) => {
-      e.preventDefault();
-      if (isScrolling.current) return;
-      const dir = (e.deltaY || e.deltaX) > 0 ? 1 : -1;
-      scrollTo(Math.round(el.scrollLeft / el.offsetWidth) + dir);
-      isScrolling.current = true;
-      setTimeout(() => { isScrolling.current = false; }, 900);
+    if (liteMotion) return;
+
+    let raf = 0;
+    let pointerX = window.innerWidth * 0.5;
+    let pointerY = window.innerHeight * 0.35;
+
+    const paint = () => {
+      raf = 0;
+      const root = rootRef.current;
+      if (!root) return;
+      root.style.setProperty("--cursor-x", `${pointerX}px`);
+      root.style.setProperty("--cursor-y", `${pointerY}px`);
     };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, [scrollTo]);
+
+    const onMove = (event) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      if (!raf) raf = window.requestAnimationFrame(paint);
+    };
+
+    paint();
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [liteMotion]);
 
   useEffect(() => {
-    const onKey = (e) => {
-      if (["ArrowRight", "ArrowDown"].includes(e.key)) { e.preventDefault(); scrollTo(activeIdx + 1); }
-      if (["ArrowLeft", "ArrowUp"].includes(e.key)) { e.preventDefault(); scrollTo(activeIdx - 1); }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [activeIdx, scrollTo]);
+    if (liteMotion) return;
 
-  const onMouseDown = (e) => { isDragging.current = true; dragStartX.current = e.clientX; dragStartScroll.current = containerRef.current.scrollLeft; setDragging(true); };
-  const onMouseMove = (e) => { if (!isDragging.current) return; containerRef.current.scrollLeft = dragStartScroll.current - (e.clientX - dragStartX.current); };
-  const onMouseUp = (e) => {
-    if (!isDragging.current) return;
-    isDragging.current = false; setDragging(false);
-    const dx = e.clientX - dragStartX.current;
-    const cur = Math.round(containerRef.current.scrollLeft / containerRef.current.offsetWidth);
-    scrollTo(cur + (Math.abs(dx) > 60 ? (dx < 0 ? 1 : -1) : 0));
+    const root = rootRef.current;
+    if (!root) return;
+
+    let idleTimer = 0;
+    const onScroll = () => {
+      root.classList.add("is-scrolling");
+      if (idleTimer) window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        root.classList.remove("is-scrolling");
+      }, 140);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (idleTimer) window.clearTimeout(idleTimer);
+      root.classList.remove("is-scrolling");
+    };
+  }, [liteMotion]);
+
+  useEffect(() => {
+    let raf = 0;
+    const bar = progressBarRef.current;
+    if (!bar) return;
+
+    const paintProgress = () => {
+      raf = 0;
+      const doc = document.documentElement;
+      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      const ratio = Math.min(1, Math.max(0, window.scrollY / max));
+      bar.style.transform = `scaleX(${ratio})`;
+    };
+
+    const queuePaint = () => {
+      if (!raf) raf = window.requestAnimationFrame(paintProgress);
+    };
+
+    queuePaint();
+    window.addEventListener("scroll", queuePaint, { passive: true });
+    window.addEventListener("resize", queuePaint);
+    return () => {
+      window.removeEventListener("scroll", queuePaint);
+      window.removeEventListener("resize", queuePaint);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const onTiltMove = (event) => {
+    if (liteMotion) return;
+
+    const card = event.currentTarget;
+    tiltPointMapRef.current.set(card, { x: event.clientX, y: event.clientY });
+    if (tiltRafMapRef.current.has(card)) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      tiltRafMapRef.current.delete(card);
+      const point = tiltPointMapRef.current.get(card);
+      if (!point) return;
+
+      const rect = card.getBoundingClientRect();
+      const px = (point.x - rect.left) / rect.width;
+      const py = (point.y - rect.top) / rect.height;
+      const rotateY = (px - 0.5) * 10;
+      const rotateX = (0.5 - py) * 8;
+
+      card.style.setProperty("--tilt-rx", `${rotateX.toFixed(2)}deg`);
+      card.style.setProperty("--tilt-ry", `${rotateY.toFixed(2)}deg`);
+      card.style.setProperty("--tilt-px", `${(px * 100).toFixed(1)}%`);
+      card.style.setProperty("--tilt-py", `${(py * 100).toFixed(1)}%`);
+    });
+
+    tiltRafMapRef.current.set(card, frame);
+  };
+
+  const onTiltLeave = (event) => {
+    const card = event.currentTarget;
+    const frame = tiltRafMapRef.current.get(card);
+    if (frame) {
+      window.cancelAnimationFrame(frame);
+      tiltRafMapRef.current.delete(card);
+    }
+
+    tiltPointMapRef.current.delete(card);
+    card.style.setProperty("--tilt-rx", "0deg");
+    card.style.setProperty("--tilt-ry", "0deg");
+    card.style.setProperty("--tilt-px", "50%");
+    card.style.setProperty("--tilt-py", "50%");
   };
 
   return (
-    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: C.bg, cursor: isMobile ? "auto" : "none" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; }
-        ::-webkit-scrollbar { display: none; }
-        a, button { cursor: ${isMobile ? "pointer" : "none"}; }
-        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-33.33%); } }
-        @keyframes pulse_dot {
-          0%,100% { opacity:1; box-shadow:0 0 5px #f1f5f9; }
-          50%      { opacity:.35; box-shadow:0 0 2px #f1f5f940; }
-        }
-        @keyframes rv_fadein { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes scroll_wheel {
-          0%   { opacity: 1; transform: translateY(0); }
-          60%  { opacity: 0; transform: translateY(10px); }
-          61%  { opacity: 0; transform: translateY(0); }
-          100% { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-
-      <Cursor isMobile={isMobile} />
-      <TopNav activeIdx={activeIdx} scrollTo={scrollTo} isMobile={isMobile} />
-
-      <div
-        ref={containerRef}
-        onMouseDown={onMouseDown} onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
-        onTouchStart={e => { touchStartX.current = e.touches[0].clientX; }}
-        onTouchEnd={e => { const dx = e.changedTouches[0].clientX - touchStartX.current; if (Math.abs(dx) > 50) scrollTo(activeIdx + (dx < 0 ? 1 : -1)); }}
-        style={{
-          display: "flex", width: "100%", height: "100%",
-          overflowX: "auto", overflowY: "hidden",
-          scrollSnapType: "x mandatory",
-          cursor: dragging ? "grabbing" : (isMobile ? "auto" : "none"),
-          userSelect: "none",
-        }}
-      >
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><HeroSection bp={bp} /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><AboutSection bp={bp} /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><SkillsSection bp={bp} /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><ProjectsSection bp={bp} /></div>
-        <div style={{ scrollSnapAlign: "start", flexShrink: 0, width: "100vw", height: "100vh" }}><ContactSection bp={bp} /></div>
+    <div
+      ref={rootRef}
+      className={`site-root theme-noir relative isolate min-h-screen overflow-x-hidden ${
+        liteMotion ? "fx-lite" : ""
+      }`}
+    >
+      {!liteMotion && <div className="cursor-aura pointer-events-none fixed inset-0 z-[6]" />}
+      <div className="galaxy-bg pointer-events-none fixed inset-0 z-0">
+        <div className="galaxy-vignette" />
+        {!liteMotion && <div className="galaxy-noise" />}
+        <div className="galaxy-grid" />
+        <div className="galaxy-wave" />
+        <div className="galaxy-orb galaxy-orb-cyan" />
+        <div className="galaxy-orb galaxy-orb-blue" />
+        {!liteMotion && <div className="galaxy-orb galaxy-orb-violet" />}
+        <div className="stars stars-a" />
+        {!liteMotion && <div className="stars stars-b" />}
+        {!liteMotion && (
+          <div className="shooting-stars">
+            <span className="shooting-star s1" />
+            <span className="shooting-star s2" />
+            <span className="shooting-star s3" />
+          </div>
+        )}
+      </div>
+      <div className="scroll-progress-wrap">
+        <div ref={progressBarRef} className="scroll-progress-bar" />
       </div>
 
-      {/* Right dot nav — hidden on mobile */}
-      {!isMobile && (
-        <div style={{ position: "fixed", right: 28, top: "50%", transform: "translateY(-50%)", display: "flex", flexDirection: "column", gap: 8, zIndex: 600 }}>
-          {NAV_ITEMS.map((_, i) => (
-            <button key={i} onClick={() => scrollTo(i)} style={{
-              width: 2, height: i === activeIdx ? 32 : 10,
-              background: i === activeIdx ? C.red : C.sub,
-              border: "none", padding: 0, borderRadius: 2,
-              transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
-              boxShadow: i === activeIdx ? `0 0 12px ${C.red}` : "none",
-            }} />
-          ))}
+      <header className="site-header fixed left-0 right-0 top-0 z-50 border-b border-slate-700/50 bg-black/35 backdrop-blur-sm">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+          <button
+            onClick={() => jumpTo("home")}
+            className="inline-flex items-center gap-1.5 rounded-md border border-cyan-300/40 bg-cyan-300/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-100 shadow-[0_0_22px_rgba(34,211,238,0.25)]"
+          >
+            <Sparkles size={12} />
+            TNS
+          </button>
+
+          <nav className="hidden items-center gap-1 md:flex">
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => jumpTo(item.id)}
+                className="rounded-md px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-200/90 transition hover:bg-white/10 hover:text-cyan-100"
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+           
+            <button
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-500/60 bg-white/5 text-slate-100 md:hidden"
+              onClick={() => setOpenMenu((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {openMenu ? <X size={16} /> : <Menu size={16} />}
+            </button>
+          </div>
         </div>
-      )}
 
-      {/* Bottom progress dots */}
-      <div style={{ position: "fixed", bottom: isMobile ? 36 : 28, left: "50%", transform: "translateX(-50%)", display: "flex", gap: 6, zIndex: 600 }}>
-        {NAV_ITEMS.map((_, i) => (
-          <div key={i} style={{
-            height: 2, borderRadius: 2,
-            width: i === activeIdx ? 28 : 6,
-            background: i === activeIdx ? C.red : C.sub,
-            transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
-          }} />
-        ))}
-      </div>
+        {openMenu && (
+          <nav className="grid grid-cols-2 gap-2 border-t border-slate-700/60 bg-slate-950/70 px-4 py-3 md:hidden">
+            <div className="col-span-2 mb-1 inline-flex items-center gap-2 rounded-md border border-cyan-300/35 bg-cyan-300/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-cyan-100">
+              <span className="status-dot" />
+              Tech-Noir Mode
+            </div>
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => jumpTo(item.id)}
+                className="rounded-md border border-slate-500/50 bg-white/5 px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.12em]"
+              >
+                {item.label}
+              </button>
+            ))}
+          </nav>
+        )}
+      </header>
 
-      <Ticker />
+      <main className="site-main relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-14 pt-24 sm:gap-10 sm:px-6 sm:pt-24 md:gap-12 md:pt-24">
+        <section
+          ref={homeRef}
+          id="home"
+          className={`hero-shell glass-card-strong relative flex flex-col overflow-hidden scroll-mt-20 rounded-2xl p-4 sm:p-6 md:p-8 section-reveal ${
+            homeVisible ? "is-visible" : ""
+          }`}
+        >
+          <div className="float-slow pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-cyan-300/20 blur-3xl" />
+          <div className="float-slow pointer-events-none absolute -bottom-20 -left-16 h-52 w-52 rounded-full bg-blue-300/15 blur-3xl [animation-delay:1200ms]" />
+
+          <div className="grid h-full flex-1 gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+            <div className="flex h-full flex-col justify-between gap-5">
+              <div>
+              
+                <p className="hero-chip inline-flex rounded-full border border-cyan-300/50 bg-cyan-300/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-100">
+                  Intern Frontend
+                </p>
+                <h1
+                  data-text="Tieu Nhat Sang"
+                  className="display-title glitch-title mt-5 block bg-gradient-to-r from-white via-cyan-100 to-cyan-300 bg-clip-text text-3xl font-black leading-tight text-transparent sm:mt-6 sm:text-4xl md:text-5xl lg:text-6xl"
+                >
+                  Tieu Nhat Sang
+                </h1>
+                <p className="mt-8 max-w-2xl text-sm leading-7 text-slate-300 sm:mt-10 sm:text-base">
+                  4th-year IT student at HUTECH University with hands-on experience building web applications using React.js and
+                  Tailwind CSS. Passionate about clean UI and eager to grow within a professional frontend team.
+                </p>
+                <p className="hero-subline mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/80">
+                  Mission: Build Fast, Sharp, Product-ready Interface
+                </p>
+              </div>
+
+              <div>
+                <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
+                  <a
+                    href="mailto:nhatsang58@gmail.com"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-cyan-300 px-5 py-2.5 text-sm font-semibold text-slate-950 shadow-[0_10px_30px_rgba(34,211,238,0.28)]"
+                  >
+                    <Mail size={16} />
+                    nhatsang58@gmail.com
+                  </a>
+                  <a
+                    href="https://my-portfolio-indol-ten-81.vercel.app"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-400/50 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-100"
+                  >
+                    Portfolio
+                    <ExternalLink size={14} />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div className="info-stack grid content-evenly gap-2.5 sm:gap-3">
+              <div className="neo-tile glass-tile hover-lift rounded-xl p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Location</p>
+                <p className="mt-1 flex items-start gap-2 text-sm text-slate-200">
+                  <MapPin size={14} className="mt-0.5 text-cyan-300" />
+                  <span>168 Nguyen Gia Tri, Binh Thanh, Ho Chi Minh City</span>
+                </p>
+              </div>
+              <div className="neo-tile glass-tile hover-lift rounded-xl p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Education</p>
+                <p className="mt-1 flex items-start gap-2 text-sm text-slate-200">
+                  <GraduationCap size={14} className="mt-0.5 text-cyan-300" />
+                  Information Technology - HUTECH (2022 - Present)
+                </p>
+              </div>
+              <div className="neo-tile glass-tile hover-lift rounded-xl p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Contact</p>
+                <p className="mt-1 flex items-start gap-2 text-sm text-slate-200">
+                  <Phone size={14} className="mt-0.5 text-cyan-300" />
+                  0394757843
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+       
+
+        <section className="hud-strip section-reveal is-visible grid gap-2 rounded-2xl border border-cyan-300/25 bg-slate-950/40 px-4 py-3 sm:grid-cols-3">
+          <div className="hud-item">
+            <span className="status-dot" />
+            <span>SYSTEM ONLINE</span>
+          </div>
+          <div className="hud-item">
+            <span className="text-slate-400">LOCAL TIME:</span>
+            <span ref={timeRef}>--:--:-- (GMT+7)</span>
+          </div>
+          <div className="hud-item">
+            <span className="text-slate-400">STATUS:</span>
+            <span>Open for Internship</span>
+          </div>
+        </section>
+
+        <section
+          ref={aboutRef}
+          id="about"
+          className={`section-shell about-shell scroll-mt-20 grid gap-3 sm:gap-4 lg:grid-cols-12 section-reveal ${
+            aboutVisible ? "is-visible" : ""
+          }`}
+        >
+          <div className="section-panel glass-card flex h-full flex-col justify-between rounded-2xl p-4 sm:p-5 md:p-6 lg:col-span-8">
+            <div>
+              <p className="section-kicker">
+                <span className="section-index">01</span>
+                About
+              </p>
+              <h2 className="section-title mt-2 text-3xl font-bold text-white sm:text-4xl">About Me</h2>
+              <p className="mt-4 text-sm leading-7 text-slate-300 sm:text-base">
+                4th-year IT student at HUTECH University with hands-on experience building web applications using React.js and
+                Tailwind CSS. Passionate about clean UI and eager to grow within a professional frontend team.
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3 sm:max-w-md">
+              <div className="neo-tile glass-tile rounded-xl p-3.5">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Current Goal</p>
+                <p className="mt-1 text-sm font-semibold text-slate-100">Frontend Internship - Real Product Team</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid h-full content-evenly gap-2.5 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-1">
+            {STRENGTHS.map((item) => (
+              <div key={item} className="neo-tile glass-tile hover-lift rounded-2xl p-3.5 sm:p-4">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">Strength</p>
+                <p className="mt-1 text-sm font-semibold text-slate-100">{item}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section
+          ref={skillsRef}
+          id="skills"
+          className={`section-shell skills-shell glass-card scroll-mt-20 flex flex-col justify-between rounded-2xl p-4 sm:p-5 md:p-6 section-reveal ${
+            skillsVisible ? "is-visible" : ""
+          }`}
+        >
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="section-kicker">
+                <span className="section-index">02</span>
+                Skills
+              </p>
+              <h2 className="section-title mt-2 text-3xl font-bold text-white sm:text-4xl">Skills</h2>
+            </div>
+            <p className="max-w-xs text-sm text-slate-300">Focused on frontend fundamentals, UI implementation, and team collaboration tools.</p>
+          </div>
+
+          <div className="mt-4 grid flex-1 content-evenly gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {Object.keys(groupedSkills).map((group) => (
+              <div key={group} className="skill-panel neo-tile glass-tile hover-lift rounded-xl p-4">
+                <p className="mb-3 text-[11px] uppercase tracking-[0.12em] text-slate-500">{group}</p>
+                <div className="flex flex-wrap gap-2">
+                  {groupedSkills[group].map((item) => (
+                    <span key={item} className="rounded-md border border-slate-400/40 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-100">
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section
+          ref={projectsRef}
+          id="projects"
+          className={`section-shell projects-shell scroll-mt-20 flex flex-col justify-between section-reveal ${
+            projectsVisible ? "is-visible" : ""
+          }`}
+        >
+          <p className="section-kicker">
+            <span className="section-index">03</span>
+            Projects
+          </p>
+          <h2 className="section-title mt-2 text-3xl font-bold text-white sm:text-4xl">Projects</h2>
+
+          <div className="mt-4 grid flex-1 content-stretch gap-3 sm:gap-4 lg:grid-cols-2">
+            {PROJECTS.map((project, index) => (
+              <article
+                key={project.name}
+                className={`tilt-card project-shell glass-card hover-lift flex h-full flex-col rounded-2xl p-4 sm:p-5 ${
+                  index % 2 === 1 ? "project-shell-alt" : ""
+                }`}
+                onMouseMove={liteMotion ? undefined : onTiltMove}
+                onMouseLeave={liteMotion ? undefined : onTiltLeave}
+              >
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-base font-bold text-white sm:text-lg">{project.name}</h3>
+                    <p className="mt-1 text-xs text-slate-400">{project.period}</p>
+                    <p className="mt-1 text-xs text-slate-500">{project.team}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className="project-index">#{String(index + 1).padStart(2, "0")}</span>
+                    <span className="rounded-full border border-cyan-300/50 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-100">
+                      {project.status}
+                    </span>
+                  </div>
+                </div>
+
+                <ul className="space-y-2 text-sm leading-6 text-slate-300">
+                  {project.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-start gap-2">
+                      <BriefcaseBusiness size={14} className="mt-1 shrink-0 text-cyan-300" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {project.tech.map((tech) => (
+                    <span key={tech} className="rounded-md border border-slate-400/40 bg-white/5 px-2.5 py-1 text-[11px] text-slate-200">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-400/50 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/60 hover:text-cyan-100 sm:w-auto"
+                >
+                  <GitBranch size={15} />
+                  View GitHub
+                  <ArrowUpRight size={14} />
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section
+          ref={contactRef}
+          id="contact"
+          className={`section-shell contact-shell glass-card-strong scroll-mt-20 flex flex-col justify-between rounded-2xl p-4 sm:p-5 md:p-6 section-reveal ${
+            contactVisible ? "is-visible" : ""
+          }`}
+        >
+          <div className="grid h-full flex-1 gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-stretch">
+            <div className="flex h-full flex-col justify-between gap-6">
+              <p className="section-kicker">
+                <span className="section-index">04</span>
+                Contact
+              </p>
+              <div>
+                <h2 className="section-title mt-2 text-3xl font-bold text-white sm:text-4xl">Contact</h2>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">
+                  I am ready to join frontend projects with React and Tailwind, build reliable responsive layouts, and polish UI for
+                  real product experiences.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-2.5 sm:flex-row sm:gap-3">
+                <a
+                  href="mailto:nhatsang58@gmail.com"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-2 text-center text-sm font-semibold text-slate-900 shadow-[0_10px_24px_rgba(255,255,255,0.2)]"
+                >
+                  <Mail size={14} />
+                  Send Email
+                </a>
+                <a
+                  href="https://github.com/nhatsang12"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/35 bg-white/10 px-4 py-2 text-center text-sm font-semibold text-white"
+                >
+                  <GitBranch size={14} />
+                  Open GitHub
+                </a>
+              </div>
+            </div>
+
+            <div className="grid gap-2.5">
+              <div className="neo-tile glass-tile rounded-xl p-3.5">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Email</p>
+                <p className="mt-1 text-sm font-semibold text-slate-100">nhatsang58@gmail.com</p>
+              </div>
+              <div className="neo-tile glass-tile rounded-xl p-3.5">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Phone</p>
+                <p className="mt-1 text-sm font-semibold text-slate-100">0394757843</p>
+              </div>
+              <div className="neo-tile glass-tile rounded-xl p-3.5">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">Availability</p>
+                <p className="mt-1 flex items-center gap-2 text-sm font-semibold text-cyan-100">
+                  <CalendarDays size={14} />
+                  Open for internship
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
