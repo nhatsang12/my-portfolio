@@ -3,6 +3,7 @@ import {
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarDays,
+  ExternalLink,
   GitBranch,
   GraduationCap,
   Mail,
@@ -22,40 +23,47 @@ const NAV_ITEMS = [
 ];
 
 const SKILLS = [
-  { name: "HTML", type: "Frontend" },
-  { name: "CSS", type: "Frontend" },
-  { name: "JavaScript", type: "Frontend" },
-  { name: "React JS", type: "Frontend" },
-  { name: "Tailwind CSS", type: "Frontend" },
-  { name: "UI Animation", type: "Frontend" },
-  { name: "Figma", type: "Design" },
+  { name: "HTML", type: "Technical" },
+  { name: "CSS", type: "Technical" },
+  { name: "JavaScript", type: "Technical" },
+  { name: "React JS", type: "Technical" },
+  { name: "Next JS", type: "Technical" },
+  { name: "TypeScript", type: "Technical" },
+  { name: "Tailwind CSS", type: "Technical" },
+  { name: "Figma", type: "Tools" },
   { name: "Git / GitHub", type: "Tools" },
+  { name: "Vercel", type: "Tools" },
+  { name: "Postman", type: "Tools" },
 ];
 
 const PROJECTS = [
   {
     name: "Event Ticketing Platform",
-    period: "Feb 2026 - Mar 2026",
-    team: "Team size 3",
+    period: "Feb 2026 \u2013 Mar 2026",
+    team: "Team size 3 | Role: Frontend Developer",
     status: "Built",
     tech: ["React.js", "React Router", "Tailwind CSS", "Lucide React"],
     bullets: [
-      "Online ticketing system with search, booking and payment flow",
-      "Admin dashboard with KPI stats and per-event revenue chart",
-      "Role-based access with protected routes",
+      "Built a complete SPA with React 19, organized components by module (layout, events, auth, admin)",
+      "Designed role-based routing with protected routes, auto-redirect for unauthenticated users, nested admin layouts",
+      "Integrated Stripe + PayOS (VietQR/MoMo) payment gateways with multi-endpoint retry; background worker auto-cancels pending orders after 15 min",
+      "Built with Vite 7 and deployed to production on Vercel",
     ],
     github: "https://github.com/nhatsang12/EventTicketMangement",
+    demo: "https://event-ticket-mangement-8s3y.vercel.app/",
   },
   {
-    name: "Estoria",
-    period: "Mar 2026 - Present",
-    team: "Team size 2",
+    name: "Estoria Platform",
+    period: "Mar 2026 \u2013 Present",
+    team: "Team size 2 | Role: Frontend Developer",
     status: "In Progress",
-    tech: ["Next.js 16", "JavaScript", "Tailwind CSS", "Recharts"],
+    tech: ["Next.js 16", "TypeScript", "Tailwind CSS"],
     bullets: [
-      "Modern UI with smooth transitions",
-      "KYC + OCR flow reducing manual admin processing",
-      "Leaflet filtering and VNPay + PayPal integration",
+      "Built SSR homepage with getServerSideProps for SEO-optimized property listings",
+      "Integrated Leaflet maps with dual geocoding (Nominatim + Mapbox) and Vietnamese address autocomplete",
+      "Developed KYC verification flow with OCR service \u2014 auto-extracts ID info from CCCD photos",
+      "Implemented AuthContext custom hooks for global state and scroll-based animations via IntersectionObserver",
+      "Created multi-step property form (3 steps) with real-time map preview, drag & drop image upload, FormData/JSON dual-mode submission",
     ],
     github: "https://github.com/ltrungkien2307/estateplaform",
   },
@@ -403,7 +411,7 @@ export default function App() {
                   Tieu Nhat Sang
                 </h1>
                 <p className="mt-8 max-w-2xl text-sm leading-7 text-slate-300 sm:mt-10 sm:text-base">
-                  4th-year IT student at HUTECH University with hands-on experience building web applications using React.js and
+                  4th-year IT student at HUTECH University with hands-on experience building web applications using React.js, Next.js, and
                   Tailwind CSS. Passionate about clean UI and eager to grow within a professional frontend team.
                 </p>
                 <p className="hero-subline mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200/80">
@@ -482,8 +490,15 @@ export default function App() {
               </p>
               <h2 className="section-title mt-2 text-3xl font-bold text-white sm:text-4xl">About Me</h2>
               <p className="mt-4 text-sm leading-7 text-slate-300 sm:text-base">
-                4th-year IT student at HUTECH University with hands-on experience building web applications using React.js and
-                Tailwind CSS. Passionate about clean UI and eager to grow within a professional frontend team.
+                I am a 4th-year IT student at{" "}
+                <span className="font-semibold text-cyan-300">HUTECH University</span> with experience building web
+                applications using{" "}
+                <span className="font-semibold text-cyan-300">React.js</span>,{" "}
+                <span className="font-semibold text-cyan-300">Next.js</span>, and{" "}
+                <span className="font-semibold text-cyan-300">Tailwind CSS</span>. Passionate about clean UI, I aim to
+                become a{" "}
+                <span className="font-semibold text-cyan-300">Full-stack Developer</span> within the next 2–3 years,
+                strengthening my skills in both frontend and backend development.
               </p>
             </div>
             <div className="mt-5 grid gap-3 sm:max-w-md">
@@ -592,16 +607,29 @@ export default function App() {
                   ))}
                 </div>
 
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-400/50 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/60 hover:text-cyan-100 sm:w-auto"
-                >
-                  <GitBranch size={15} />
-                  View GitHub
-                  <ArrowUpRight size={14} />
-                </a>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg border border-slate-400/50 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-100 transition hover:border-cyan-300/60 hover:text-cyan-100"
+                  >
+                    <GitBranch size={15} />
+                    View GitHub
+                    <ArrowUpRight size={14} />
+                  </a>
+                  {project.demo && (
+                    <a
+                      href={project.demo}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg border border-cyan-300/40 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-300/20"
+                    >
+                      <ExternalLink size={14} />
+                      Live Demo
+                    </a>
+                  )}
+                </div>
               </article>
             ))}
           </div>
