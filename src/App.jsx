@@ -39,7 +39,7 @@ const SKILLS = [
 const PROJECTS = [
   {
     name: "Event Ticketing Platform",
-    period: "Feb 2026 \u2013 Mar 2026",
+    period: "Feb 2026 \u2013 Apr 2026",
     team: "Team size 3 | Role: Frontend Developer",
     status: "Built",
     tech: ["React.js", "React Router", "Tailwind CSS", "Lucide React"],
@@ -66,6 +66,7 @@ const PROJECTS = [
       "Created multi-step property form (3 steps) with real-time map preview, drag & drop image upload, FormData/JSON dual-mode submission",
     ],
     github: "https://github.com/ltrungkien2307/estateplaform",
+    demo: "https://frontend-tan-theta-82.vercel.app/",
   },
 ];
 
