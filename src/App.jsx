@@ -61,7 +61,7 @@ const PROJECTS = [
     bullets: [
       "Built SSR homepage with getServerSideProps for SEO-optimized property listings",
       "Integrated Leaflet maps with dual geocoding (Nominatim + Mapbox) and Vietnamese address autocomplete",
-      "Developed KYC verification flow with OCR service \u2014 auto-extracts ID info from CCCD photos",
+      "Developed KYC verification flow with OCR service-auto-extracts ID info from CCCD photos",
       "Implemented AuthContext custom hooks for global state and scroll-based animations via IntersectionObserver",
       "Created multi-step property form (3 steps) with real-time map preview, drag & drop image upload, FormData/JSON dual-mode submission",
     ],
